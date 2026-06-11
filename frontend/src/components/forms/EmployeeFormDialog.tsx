@@ -201,10 +201,10 @@ export function EmployeeFormDialog({ open, onClose, onSaved, employee }: Employe
         </FormField>
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <FormField label="Hourly Rate ($)">
+          <FormField label="Hourly Rate (AED)">
             <Input type="number" min="0" value={form.hourlyRate} onChange={(e) => set('hourlyRate', e.target.value)} placeholder="85" required />
           </FormField>
-          <FormField label="Monthly Salary ($)">
+          <FormField label="Monthly Salary (AED)">
             <Input type="number" min="0" value={form.monthlySalary} onChange={(e) => set('monthlySalary', e.target.value)} placeholder="13600" />
           </FormField>
           <FormField label="Capacity (h/wk)">

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { Dashboard } from '@/pages/Dashboard'
 import { Projects } from '@/pages/Projects'
@@ -11,7 +11,15 @@ import { Timesheets } from '@/pages/Timesheets'
 import { Budgets } from '@/pages/Budgets'
 import { Reports } from '@/pages/Reports'
 import { Settings } from '@/pages/Settings'
-
+import { PcpDashboard } from '@/pages/pcp/PcpDashboard'
+import { PcpNewRequest } from '@/pages/pcp/PcpNewRequest'
+import { PcpList } from '@/pages/pcp/PcpList'
+import { PcpDetail } from '@/pages/pcp/PcpDetail'
+import { PcpApprovalQueue } from '@/pages/pcp/PcpApprovalQueue'
+import { PcpRevisions } from '@/pages/pcp/PcpRevisions'
+import { PcpExecutiveDashboard } from '@/pages/pcp/PcpExecutiveDashboard'
+import { PcpAiInsights } from '@/pages/pcp/PcpAiInsights'
+import { PcpAdmin } from '@/pages/pcp/PcpAdmin'
 export default function App() {
   return (
     <BrowserRouter>
@@ -28,6 +36,17 @@ export default function App() {
           <Route path="budgets" element={<Budgets />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="pcp/dashboard" element={<PcpDashboard />} />
+          <Route path="pcp/new" element={<PcpNewRequest />} />
+          <Route path="pcp/requests" element={<PcpList mode="mine" />} />
+          <Route path="pcp/requests/:id" element={<PcpDetail />} />
+          <Route path="pcp/all" element={<PcpList mode="all" />} />
+          <Route path="pcp/approval" element={<PcpApprovalQueue />} />
+          <Route path="pcp/revisions" element={<PcpRevisions />} />
+          <Route path="pcp/executive" element={<PcpExecutiveDashboard />} />
+          <Route path="pcp/insights" element={<PcpAiInsights />} />
+          <Route path="pcp/admin" element={<PcpAdmin />} />
+          <Route path="pcp/assistant" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>

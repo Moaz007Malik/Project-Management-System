@@ -153,10 +153,10 @@ export function ProjectFormDialog({ open, onClose, onSaved, project, employees }
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField label="Budget ($)">
+          <FormField label="Budget (AED)">
             <Input type="number" min="0" value={form.budget} onChange={(e) => set('budget', e.target.value)} placeholder="500000" required />
           </FormField>
-          <FormField label="Revenue ($)">
+          <FormField label="Revenue (AED)">
             <Input type="number" min="0" value={form.revenue} onChange={(e) => set('revenue', e.target.value)} placeholder="750000" required />
           </FormField>
         </div>

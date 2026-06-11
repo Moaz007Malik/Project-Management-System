@@ -1,3 +1,5 @@
+export type PcpRole = 'Requester' | 'Approver' | 'Admin' | 'Executive'
+
 export interface DocumentRecord {
   id: string
   entityType: 'employee' | 'project'
@@ -24,6 +26,10 @@ export interface Employee {
   status: 'Available' | 'Allocated' | 'Fully Allocated' | 'On Leave'
   utilization?: number
   allocatedHours?: number
+  /** PCP module role — same person as HR / project resources */
+  pcpRole?: PcpRole | null
+  businessUnit?: string
+  active?: boolean
 }
 
 export interface Project {
@@ -199,4 +205,141 @@ export interface CapacityForecast {
   utilization: number
   warning: { level: string; message: string }
   assignedTasks: { id: string; title: string; hours: number }[]
+}
+
+export type PcpStatus = 'Draft' | 'In Approval' | 'Approved' | 'Rejected' | 'Returned' | 'Closed'
+
+export interface PcpBenefit {
+  name: string
+  amount: number
+}
+
+export interface PcpCostCenterCharge {
+  code: string
+  percent: number
+}
+
+export interface PcpPosition {
+  id?: string
+  title: string
+  jobFamily: string
+  grade: string
+  count: number
+  employmentType: string
+  shift: string
+  workLocation: string
+  plannedStart: string
+  plannedDemob?: string
+  reportingLine?: string
+  marketSalary?: number
+  proposedSalary: number
+  salaryOnHired?: number | null
+  benefits?: PcpBenefit[]
+  contractDuration: string
+  noticePeriod: string
+  probationPeriod?: string
+  costCenters: PcpCostCenterCharge[]
+  bandBreachJustification?: string
+  monthlyBudget?: number
+  totalBudget?: number
+  actualCost?: number | null
+  filled?: number
+  vacant?: number
+  daysVacant?: number
+}
+
+export interface PcpApprovalStep {
+  step: string
+  by: string
+  at?: string | null
+  tatHours?: number | null
+  slaDue?: string
+}
+
+export interface PcpRequest {
+  id: string
+  pcpNo: string
+  client: string
+  clientLocation: string
+  recruitmentType: string
+  issueDate: string
+  requiredByDate: string
+  businessUnit: string
+  wbs: string
+  priority: string
+  requestedBy: string
+  requestedById?: string
+  status: PcpStatus
+  currentStage: string
+  revision: number
+  slaHoursRemaining?: number
+  slaOverdue?: boolean
+  sapSync?: string
+  approvalTrail: PcpApprovalStep[]
+  positions: PcpPosition[]
+  monthlyTotal?: number
+  annualTotal?: number
+  budgetVsActual?: number
+  positionSummary?: string
+  createdAt?: string
+  updatedAt?: string
+  revisions?: PcpRevision[]
+}
+
+export interface PcpRevisionSnapshotPosition {
+  title: string
+  shift?: string
+  count?: number
+  monthlyBudget?: number
+  costCenters?: string
+}
+
+export interface PcpRevisionSnapshot {
+  monthlyTotal?: number
+  headcount?: number
+  positions?: PcpRevisionSnapshotPosition[]
+}
+
+export interface PcpRevision {
+  id: string
+  pcpId: string
+  revision: number
+  author: string
+  date: string
+  status: string
+  summary: string
+  justification?: string
+  changes?: { field: string; position: string; oldValue: string; newValue: string }[]
+  snapshot?: PcpRevisionSnapshot
+}
+
+export interface PcpUser {
+  id: string
+  name: string
+  email: string
+  role: PcpRole
+  businessUnit: string
+  designation: string
+  active: boolean
+}
+
+export interface PcpMasters {
+  clients: string[]
+  locations: string[]
+  recruitmentTypes: string[]
+  businessUnits: string[]
+  wbsByBu: Record<string, string[]>
+  priorities: string[]
+  positionTitles: string[]
+  jobFamilies: string[]
+  grades: { code: string; bandMin: number; bandMax: number }[]
+  employmentTypes: string[]
+  shifts: string[]
+  workLocations: string[]
+  contractDurations: string[]
+  noticePeriods: string[]
+  probationPeriods: string[]
+  benefits: string[]
+  costCenters: { code: string; name: string }[]
+  reportingLines: string[]
 }

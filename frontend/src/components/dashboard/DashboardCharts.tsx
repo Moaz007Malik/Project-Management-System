@@ -4,6 +4,7 @@ import {
 } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { DashboardMetrics } from '@/types'
+import { formatCurrency, formatCurrencyCompact } from '@/lib/utils'
 
 const COLORS = ['#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#6366f1']
 const STATUS_COLORS: Record<string, string> = {
@@ -24,7 +25,7 @@ interface DashboardChartsProps {
 
 export function DashboardCharts({ metrics }: DashboardChartsProps) {
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <>
       <Card className="animate-fade-in">
         <CardHeader><CardTitle>Project Status Distribution</CardTitle></CardHeader>
         <CardContent>
@@ -53,8 +54,8 @@ export function DashboardCharts({ metrics }: DashboardChartsProps) {
             <BarChart data={metrics.budgetVsActual}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis dataKey="name" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
-              <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
-              <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => [`$${Number(v).toLocaleString()}`, '']} />
+              <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => formatCurrencyCompact(Number(v))} />
+              <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => [formatCurrency(Number(v)), '']} />
               <Legend />
               <Bar dataKey="budget" fill="#8b5cf6" radius={[4, 4, 0, 0]} name="Budget" />
               <Bar dataKey="actual" fill="#06b6d4" radius={[4, 4, 0, 0]} name="Actual" />
@@ -95,8 +96,8 @@ export function DashboardCharts({ metrics }: DashboardChartsProps) {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
-              <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
-              <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => [`$${Number(v).toLocaleString()}`, 'Cost']} />
+              <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => formatCurrencyCompact(Number(v))} />
+              <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => [formatCurrency(Number(v)), 'Cost']} />
               <Area type="monotone" dataKey="cost" stroke="#8b5cf6" fill="url(#colorCost)" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
@@ -110,8 +111,8 @@ export function DashboardCharts({ metrics }: DashboardChartsProps) {
             <BarChart data={metrics.projectProfitability}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis dataKey="projectName" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
-              <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
-              <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => [`$${Number(v).toLocaleString()}`, '']} />
+              <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => formatCurrencyCompact(Number(v))} />
+              <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => [formatCurrency(Number(v)), '']} />
               <Legend />
               <Bar dataKey="revenue" fill="#10b981" radius={[4, 4, 0, 0]} name="Revenue" />
               <Bar dataKey="actualCost" fill="#ef4444" radius={[4, 4, 0, 0]} name="Cost" />
@@ -137,6 +138,6 @@ export function DashboardCharts({ metrics }: DashboardChartsProps) {
           </ResponsiveContainer>
         </CardContent>
       </Card>
-    </div>
+    </>
   )
 }

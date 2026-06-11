@@ -18,7 +18,10 @@ const NOTIF_LABELS: Record<string, string> = {
 }
 
 export function Settings() {
-  const { darkMode, toggleDarkMode, notificationPrefs, toggleNotificationPref, currentUserId, setCurrentUserId } = useAppStore()
+  const {
+    darkMode, toggleDarkMode, notificationPrefs, toggleNotificationPref,
+    currentUserId, setCurrentUser, pcpRole, businessUnit,
+  } = useAppStore()
   const { employees, fetchEmployees } = useEmployeeStore()
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([])
 
@@ -40,13 +43,40 @@ export function Settings() {
         <Card>
           <CardHeader>
             <CardTitle>Current User</CardTitle>
-            <CardDescription>Select the active user profile for this session</CardDescription>
+            <CardDescription>
+              One profile for Project Management and Personnel Cost Planning — role and business unit follow the selected person
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Select value={currentUserId} onChange={(e) => setCurrentUserId(e.target.value)}>
-              {employees.map((e) => <option key={e.id} value={e.id}>{e.fullName} — {e.designation}</option>)}
+          <CardContent className="space-y-3">
+            <Select
+              value={currentUserId}
+              onChange={(e) => {
+                const employee = employees.find((emp) => emp.id === e.target.value)
+                if (employee) setCurrentUser(employee)
+              }}
+            >
+              {employees.map((e) => (
+                <option key={e.id} value={e.id}>
+                  {e.fullName} — {e.designation}
+                  {e.pcpRole ? ` (${e.pcpRole})` : ''}
+                </option>
+              ))}
             </Select>
-            {currentUser && <p className="mt-2 text-sm text-muted-foreground">{currentUser.email}</p>}
+            {currentUser && (
+              <div className="rounded-lg border border-border bg-muted/30 p-3 text-sm space-y-1">
+                <p className="text-muted-foreground">{currentUser.email}</p>
+                <p><span className="text-muted-foreground">Department:</span> {currentUser.department}</p>
+                {pcpRole ? (
+                  <p>
+                    <span className="text-muted-foreground">PCP access:</span>{' '}
+                    <span className="font-medium text-[#E31E24]">{pcpRole}</span>
+                    {' · '}{businessUnit}
+                  </p>
+                ) : (
+                  <p className="text-muted-foreground">No PCP module role — project &amp; HR access only</p>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
 

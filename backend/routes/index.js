@@ -22,6 +22,7 @@ import {
   syncTaskHoursFromTimesheets,
 } from '../services/timesheetSyncService.js';
 import { v4 as uuidv4 } from 'uuid';
+import pcpRoutes from './pcp.js';
 
 const router = Router();
 const MAX_DOCUMENT_BYTES = 5 * 1024 * 1024;
@@ -164,9 +165,9 @@ router.use('/projects', createCrudRoutes('Project', repos.projects, {
   onUpdate: async (old, updated) => {
     if (old.budget !== updated.budget) {
       await logAudit('BUDGET_CHANGE', 'Project', updated.id,
-        `Project ${updated.name} budget changed from $${old.budget?.toLocaleString()} to $${updated.budget?.toLocaleString()}`);
+        `Project ${updated.name} budget changed from AED ${old.budget?.toLocaleString()} to AED ${updated.budget?.toLocaleString()}`);
       await createNotification('budget', 'Budget Updated',
-        `Project ${updated.name} budget changed from $${old.budget?.toLocaleString()} to $${updated.budget?.toLocaleString()}`);
+        `Project ${updated.name} budget changed from AED ${old.budget?.toLocaleString()} to AED ${updated.budget?.toLocaleString()}`);
     }
     await syncBudgetRecord(updated.id);
   },
@@ -515,6 +516,22 @@ router.get('/projects/:id/details', async (req, res) => {
     const financials = calculateProjectFinancials(project, tasks, timesheets, employees, budgetRecord);
     const assignedEmployeeIds = [...new Set(projectTasks.map((t) => t.assigneeId).filter(Boolean))];
     const assignedResources = employees.filter((e) => assignedEmployeeIds.includes(e.id));
+    const pcpRequests = await repos.pcpRequests.getAll();
+    const pcps = pcpRequests
+      .filter((r) => r.client === project.name)
+      .map((r) => {
+        const positions = r.positions || [];
+        const monthlyTotal = r.monthlyTotal ?? positions.reduce((s, p) => s + (p.monthlyBudget || 0) * (p.count || 1), 0);
+        const filled = positions.reduce((s, p) => s + (p.filled || 0), 0);
+        const vacant = positions.reduce((s, p) => s + (p.vacant ?? Math.max(0, (p.count || 1) - (p.filled || 0))), 0);
+        const posCount = positions.reduce((s, p) => s + (p.count || 1), 0);
+        return {
+          ...r,
+          monthlyTotal,
+          positionSummary: r.positionSummary || `${posCount} (${filled} filled / ${vacant} vacant)`,
+        };
+      })
+      .sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0));
 
     res.json({
       project,
@@ -525,6 +542,7 @@ router.get('/projects/:id/details', async (req, res) => {
       issues: issues.filter((i) => i.projectId === project.id),
       budget: financials,
       progress: financials.progress,
+      pcps,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -572,5 +590,7 @@ router.post('/sync/employees', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+router.use('/pcp', pcpRoutes);
 
 export default router;

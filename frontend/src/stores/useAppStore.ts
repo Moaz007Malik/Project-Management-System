@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import type { Employee, PcpRole } from '@/types'
+import { syncPcpFromEmployee } from '@/lib/userContext'
 
 interface NotificationPrefs {
   taskAssignments: boolean
@@ -13,10 +15,14 @@ interface AppState {
   darkMode: boolean
   sidebarOpen: boolean
   currentUserId: string
+  pcpRole: PcpRole | null
+  businessUnit: string
   notificationPrefs: NotificationPrefs
   toggleDarkMode: () => void
   setSidebarOpen: (open: boolean) => void
   setCurrentUserId: (id: string) => void
+  setCurrentUser: (employee: Employee) => void
+  syncFromEmployee: (employee: Employee | undefined) => void
   toggleNotificationPref: (key: keyof NotificationPrefs) => void
 }
 
@@ -33,11 +39,21 @@ export const useAppStore = create<AppState>()(
     (set) => ({
       darkMode: false,
       sidebarOpen: true,
-      currentUserId: 'emp-4',
+      currentUserId: 'emp-1',
+      pcpRole: 'Requester',
+      businessUnit: 'Construction – North',
       notificationPrefs: defaultPrefs,
       toggleDarkMode: () => set((s) => ({ darkMode: !s.darkMode })),
       setSidebarOpen: (open) => set({ sidebarOpen: open }),
       setCurrentUserId: (id) => set({ currentUserId: id }),
+      setCurrentUser: (employee) => {
+        const { pcpRole, businessUnit } = syncPcpFromEmployee(employee)
+        set({ currentUserId: employee.id, pcpRole, businessUnit })
+      },
+      syncFromEmployee: (employee) => {
+        const { pcpRole, businessUnit } = syncPcpFromEmployee(employee)
+        set({ pcpRole, businessUnit })
+      },
       toggleNotificationPref: (key) =>
         set((s) => ({ notificationPrefs: { ...s.notificationPrefs, [key]: !s.notificationPrefs[key] } })),
     }),

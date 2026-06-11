@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, AlertTriangle, Bug, Plus, Pencil, Trash2 } from 'lucide-react'
+import { Link, useParams, useNavigate } from 'react-router-dom'
+import { ArrowLeft, AlertTriangle, Bug, Plus, Pencil, Trash2, FilePlus } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -10,12 +10,14 @@ import { ProjectFormDialog } from '@/components/forms/ProjectFormDialog'
 import { TaskFormDialog } from '@/components/forms/TaskFormDialog'
 import { RiskIssueFormDialog } from '@/components/forms/RiskIssueFormDialog'
 import { EntityDocumentsCard } from '@/components/documents/EntityDocumentsCard'
+import { ProjectPcpsCard } from '@/components/pcp/ProjectPcpsCard'
 import { api } from '@/lib/api'
+import { useAppStore } from '@/stores/useAppStore'
 import { useEmployeeStore } from '@/stores/useEmployeeStore'
 import { useProjectStore } from '@/stores/useProjectStore'
 import { useTaskStore } from '@/stores/useTaskStore'
 import { cn, formatCurrency, getStatusColor } from '@/lib/utils'
-import type { Risk, Issue, Employee, Project } from '@/types'
+import type { Risk, Issue, Employee, Project, PcpRequest } from '@/types'
 
 interface ProjectDetails {
   project: Project
@@ -26,12 +28,15 @@ interface ProjectDetails {
   issues: Issue[]
   budget: { budget: number; plannedCost: number; actualCost: number; remaining: number; health: { status: string; consumption: number }; profitability: { profit: number; margin: number } }
   progress: number
+  pcps: PcpRequest[]
 }
 
 export function ProjectDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { pcpRole } = useAppStore()
   const { employees, fetchEmployees } = useEmployeeStore()
+  const canCreatePcp = pcpRole === 'Requester' || pcpRole === 'Admin'
   const { projects, fetchProjects, deleteProject } = useProjectStore()
   const { fetchTasks } = useTaskStore()
   const [data, setData] = useState<ProjectDetails | null>(null)
@@ -63,7 +68,7 @@ export function ProjectDetail() {
 
   if (loading || !data) return <Skeleton className="h-96" />
 
-  const { project, wbs, risks, issues, budget, assignedResources, progress } = data
+  const { project, wbs, risks, issues, budget, assignedResources, progress, pcps = [] } = data
   const healthColors = { green: 'text-emerald-600', yellow: 'text-amber-600', red: 'text-red-600' }
 
   return (
@@ -77,7 +82,12 @@ export function ProjectDetail() {
           </div>
           <p className="text-muted-foreground">{project.client} · PM: {project.projectManager} · {progress}% complete</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          {canCreatePcp && (
+            <Link to={`/pcp/new?projectId=${project.id}`}>
+              <Button className="bg-[#E31E24] hover:bg-[#c9191f]"><FilePlus className="h-4 w-4" /> Create PCP</Button>
+            </Link>
+          )}
           <Button variant="outline" onClick={() => setEditOpen(true)}><Pencil className="h-4 w-4" /> Edit</Button>
           <Button variant="outline" onClick={() => setTaskOpen(true)}><Plus className="h-4 w-4" /> Add Task</Button>
           <Button variant="destructive" onClick={handleDelete}><Trash2 className="h-4 w-4" /></Button>
@@ -143,6 +153,8 @@ export function ProjectDetail() {
           </Card>
 
           <EntityDocumentsCard entityType="project" entityId={project.id} />
+
+          <ProjectPcpsCard projectId={project.id} projectName={project.name} pcps={pcps} canCreate={canCreatePcp} />
         </div>
       </div>
 

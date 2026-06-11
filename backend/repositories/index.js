@@ -13,6 +13,10 @@ import {
   Issue,
   Leave,
   Document,
+  PcpRequest,
+  PcpRevision,
+  PcpUser,
+  PcpApprovalChain,
 } from '../models/index.js';
 
 export const repos = {
@@ -29,4 +33,8 @@ export const repos = {
   issues: new MongoRepository(Issue),
   leaves: new MongoRepository(Leave),
   documents: new MongoRepository(Document),
+  pcpRequests: new MongoRepository(PcpRequest),
+  pcpRevisions: new MongoRepository(PcpRevision),
+  pcpUsers: new MongoRepository(PcpUser),
+  pcpApprovalChains: new MongoRepository(PcpApprovalChain),
 };

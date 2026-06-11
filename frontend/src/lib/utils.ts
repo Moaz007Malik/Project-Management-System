@@ -5,8 +5,26 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+const aedFormatter = new Intl.NumberFormat('en-AE', {
+  style: 'currency',
+  currency: 'AED',
+  maximumFractionDigits: 0,
+})
+
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount)
+  if (Number.isNaN(amount)) return aedFormatter.format(0)
+  return aedFormatter.format(amount)
+}
+
+/** @deprecated Use formatCurrency — all amounts are AED */
+export const formatAed = formatCurrency
+
+/** Compact axis labels for charts, e.g. "AED 120k" */
+export function formatCurrencyCompact(amount: number): string {
+  if (Math.abs(amount) >= 1000) {
+    return `AED ${(amount / 1000).toFixed(0)}k`
+  }
+  return formatCurrency(amount)
 }
 
 export function formatPercent(value: number): string {

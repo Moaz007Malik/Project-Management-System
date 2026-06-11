@@ -53,7 +53,7 @@ async function checkBudgetAfterTimesheet(timesheet) {
 
   if (health.status === 'red') {
     await createNotification('budget', 'Budget Exceeded',
-      `Project ${project.name} has exceeded its budget ($${actualCost.toLocaleString()} / $${budget.toLocaleString()})`,
+      `Project ${project.name} has exceeded its budget (AED ${actualCost.toLocaleString()} / AED ${budget.toLocaleString()})`,
       'all', { projectId: project.id });
   } else if (health.status === 'yellow') {
     await createNotification('budget', 'Budget Warning',
@@ -109,7 +109,7 @@ export async function syncBudgetRecord(projectId) {
       amount: project.budget || 0,
       plannedCost: financials.plannedCost,
       actualCost: financials.actualCost,
-      currency: 'USD',
+      currency: 'AED',
       fiscalYear: new Date().getFullYear(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

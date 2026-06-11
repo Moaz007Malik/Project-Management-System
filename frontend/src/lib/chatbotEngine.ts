@@ -284,7 +284,7 @@ function formatEmployeesBySkills(employees: Employee[], skills: string[]): strin
 }
 
 function welcomeMessage(): string {
-  return 'Hi! I\'m **Descon Assistant**. Ask me about projects, budgets, or team skills.'
+  return 'Hi! I\'m **Descon Chatbot**. Ask me about projects, budgets, or team skills.'
 }
 
 function helpMessage(): string {

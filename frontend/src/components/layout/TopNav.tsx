@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Search, Bell, Moon, Sun, User, Check } from 'lucide-react'
+import { StatusLegend } from '@/components/pcp/StatusLegend'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useAppStore } from '@/stores/useAppStore'
@@ -9,7 +11,9 @@ import { cn } from '@/lib/utils'
 import { formatDistanceToNow } from 'date-fns'
 
 export function TopNav() {
-  const { darkMode, toggleDarkMode, sidebarOpen, currentUserId } = useAppStore()
+  const location = useLocation()
+  const isPcp = location.pathname.startsWith('/pcp')
+  const { darkMode, toggleDarkMode, sidebarOpen, currentUserId, pcpRole } = useAppStore()
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotificationStore()
   const { employees, getEmployeeById } = useEmployeeStore()
   const [showNotifications, setShowNotifications] = useState(false)
@@ -24,7 +28,7 @@ export function TopNav() {
       <div className="relative w-full max-w-md">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search projects, tasks, people..."
+          placeholder={isPcp ? 'Search PCP No., positions, cost centers…' : 'Search projects, tasks, people...'}
           className="pl-10 bg-muted/50 border-0"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -32,6 +36,7 @@ export function TopNav() {
       </div>
 
       <div className="flex items-center gap-2">
+        {isPcp && <StatusLegend />}
         <Button variant="ghost" size="icon" onClick={toggleDarkMode}>
           {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
@@ -83,7 +88,13 @@ export function TopNav() {
           </div>
           <div className="hidden md:block">
             <p className="text-sm font-medium">{currentUser?.fullName || 'User'}</p>
-            <p className="text-[10px] text-muted-foreground">{currentUser?.designation || ''}</p>
+            <p className="text-[10px] text-muted-foreground">
+              {isPcp && pcpRole ? (
+                <><span className="font-medium text-[#E31E24]">{pcpRole}</span>{currentUser?.designation ? ` · ${currentUser.designation}` : ''}</>
+              ) : (
+                currentUser?.designation
+              )}
+            </p>
           </div>
         </div>
       </div>

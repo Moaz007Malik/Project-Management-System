@@ -9,9 +9,9 @@ import { cn } from '@/lib/utils'
 import { ChatBot } from '@/components/chatbot/ChatBot'
 
 export function AppLayout() {
-  const { darkMode, sidebarOpen } = useAppStore()
+  const { darkMode, sidebarOpen, currentUserId, syncFromEmployee } = useAppStore()
   const { fetchNotifications } = useNotificationStore()
-  const { fetchEmployees } = useEmployeeStore()
+  const { fetchEmployees, employees } = useEmployeeStore()
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode)
@@ -21,6 +21,11 @@ export function AppLayout() {
     fetchNotifications()
     fetchEmployees()
   }, [fetchNotifications, fetchEmployees])
+
+  useEffect(() => {
+    const employee = employees.find((e) => e.id === currentUserId)
+    if (employee) syncFromEmployee(employee)
+  }, [employees, currentUserId, syncFromEmployee])
 
   return (
     <div className={cn('min-h-screen gradient-bg', darkMode && 'dark')}>

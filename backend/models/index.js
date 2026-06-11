@@ -31,3 +31,7 @@ export const Risk = createModel('Risk', 'risks');
 export const Issue = createModel('Issue', 'issues');
 export const Leave = createModel('Leave', 'leaves');
 export const Document = createModel('Document', 'documents');
+export const PcpRequest = createModel('PcpRequest', 'pcp_requests');
+export const PcpRevision = createModel('PcpRevision', 'pcp_revisions');
+export const PcpUser = createModel('PcpUser', 'pcp_users');
+export const PcpApprovalChain = createModel('PcpApprovalChain', 'pcp_approval_chains');
