@@ -8,6 +8,7 @@ import {
   markAllAsRead,
 } from '../services/notificationService.js';
 import { getDashboardMetrics } from '../services/dashboardService.js';
+import { sendDashboardReportEmail } from '../services/emailService.js';
 import {
   rankAssignees,
   forecastCapacity,
@@ -23,8 +24,12 @@ import {
 } from '../services/timesheetSyncService.js';
 import { v4 as uuidv4 } from 'uuid';
 import pcpRoutes from './pcp.js';
+import authRoutes from './auth.js';
+import { sanitizeEmployee, hashPassword, defaultPasswordForRole } from '../services/authService.js';
 
 const router = Router();
+
+router.use('/auth', authRoutes);
 const MAX_DOCUMENT_BYTES = 5 * 1024 * 1024;
 
 async function deleteDocumentsForEntity(entityType, entityId) {
@@ -47,10 +52,12 @@ function sanitizeBody(body, extraStrip = []) {
 
 function createCrudRoutes(name, repo, options = {}) {
   const r = Router();
+  const serialize = options.serialize || ((item) => item);
 
   r.get('/', async (req, res) => {
     try {
-      res.json(await repo.getAll());
+      const items = await repo.getAll();
+      res.json(items.map(serialize));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -60,7 +67,7 @@ function createCrudRoutes(name, repo, options = {}) {
     try {
       const item = await repo.getById(req.params.id);
       if (!item) return res.status(404).json({ error: 'Not found' });
-      res.json(item);
+      res.json(serialize(item));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -82,7 +89,7 @@ function createCrudRoutes(name, repo, options = {}) {
       await repo.create(item);
       await logAudit('CREATE', name, item.id, `${name} created: ${item.name || item.title || item.fullName || item.id}`);
       if (options.onCreate) await options.onCreate(item);
-      res.status(201).json(item);
+      res.status(201).json(serialize(item));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -100,7 +107,7 @@ function createCrudRoutes(name, repo, options = {}) {
       const updated = await repo.update(req.params.id, updates);
       await logAudit('UPDATE', name, req.params.id, `${name} updated (${Object.keys(updates).join(', ')})`);
       if (options.onUpdate) await options.onUpdate(existing, updated);
-      res.json(updated);
+      res.json(serialize(updated));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -123,6 +130,7 @@ function createCrudRoutes(name, repo, options = {}) {
 }
 
 router.use('/employees', createCrudRoutes('Employee', repos.employees, {
+  serialize: sanitizeEmployee,
   transformCreate: (body) => {
     const data = sanitizeBody(body);
     if (!data.employeeId) {
@@ -138,6 +146,7 @@ router.use('/employees', createCrudRoutes('Employee', repos.employees, {
       hourlyRate: data.hourlyRate ?? 0,
       monthlySalary: data.monthlySalary ?? 0,
       status: data.status || 'Available',
+      systemRole: data.systemRole || 'Manager',
     };
   },
   validate: async (data) => {
@@ -149,7 +158,14 @@ router.use('/employees', createCrudRoutes('Employee', repos.employees, {
     if (skills.length === 0) errors.push('At least one skill is required');
     return errors;
   },
-  onCreate: async (emp) => { await syncEmployee(emp.id); },
+  onCreate: async (emp) => {
+    if (!emp.passwordHash) {
+      const role = emp.systemRole || 'Manager';
+      const hash = await hashPassword(defaultPasswordForRole(role));
+      await repos.employees.update(emp.id, { passwordHash: hash });
+    }
+    await syncEmployee(emp.id);
+  },
   onUpdate: async (old, updated) => { await syncEmployee(updated.id); },
   onDelete: async (emp) => {
     const tasks = await repos.tasks.getAll();
@@ -321,6 +337,20 @@ router.use('/leaves', createCrudRoutes('Leave', repos.leaves, {
 router.get('/dashboard', async (req, res) => {
   try {
     res.json(await getDashboardMetrics());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/dashboard/send-report', async (req, res) => {
+  try {
+    const { email, pdfBase64, fileName } = req.body;
+    if (!email?.trim()) return res.status(400).json({ error: 'Email is required' });
+    if (!pdfBase64) return res.status(400).json({ error: 'PDF data is required' });
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email.trim())) return res.status(400).json({ error: 'Invalid email address' });
+    const result = await sendDashboardReportEmail({ to: email, pdfBase64, fileName });
+    res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

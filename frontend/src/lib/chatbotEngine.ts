@@ -283,8 +283,10 @@ function formatEmployeesBySkills(employees: Employee[], skills: string[]): strin
   return lines.join('\n')
 }
 
+export const CHATBOT_NAME = 'CORVI - The AI Assistant'
+
 function welcomeMessage(): string {
-  return 'Hi! I\'m **Descon Chatbot**. Ask me about projects, budgets, or team skills.'
+  return `Hi! I'm **${CHATBOT_NAME}**. Ask me about projects, budgets, or team skills.`
 }
 
 function helpMessage(): string {

@@ -58,7 +58,7 @@ export function PcpNewRequest() {
   const [projectLoading, setProjectLoading] = useState(!!projectId)
   const projectPrefilled = useRef(false)
   const [header, setHeader] = useState({
-    client: 'Project A',
+    client: 'ADNOC Refinery Electrical Turnaround',
     clientLocation: 'Abu Dhabi',
     recruitmentType: 'New Hire',
     issueDate: new Date().toISOString().slice(0, 10),
@@ -114,7 +114,7 @@ export function PcpNewRequest() {
 
   const buildPayload = (): Partial<PcpRequest> => ({
     ...header,
-    requestedBy: currentUser?.fullName || 'S. Imran',
+    requestedBy: currentUser?.fullName || 'Muhammad Imran',
     requestedById: currentUserId,
     status: 'Draft',
     positions: positions.map((p, i) => ({

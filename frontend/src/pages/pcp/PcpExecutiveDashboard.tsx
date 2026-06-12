@@ -30,7 +30,12 @@ export function PcpExecutiveDashboard() {
           <p className="text-muted-foreground">All business units · click widgets to drill down</p>
         </div>
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-          <Select className="w-full sm:w-36"><option>All Projects</option><option>Project A</option><option>Project B</option></Select>
+          <Select className="w-full sm:w-36">
+            <option>All Projects</option>
+            {(data.headcountByProject ?? []).map((row) => (
+              <option key={row.project} value={row.project}>{row.project}</option>
+            ))}
+          </Select>
           <Select className="w-full sm:w-36"><option>YTD</option><option>This Quarter</option><option>This Month</option></Select>
         </div>
       </div>

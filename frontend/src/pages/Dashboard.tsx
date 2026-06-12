@@ -1,9 +1,10 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   FolderKanban, Users, DollarSign, TrendingUp, Wallet,
-  FileText, Clock, AlertTriangle, FilePlus, CheckSquare,
+  FileText, Clock, AlertTriangle, FilePlus, CheckSquare, Download,
 } from 'lucide-react'
+import { DashboardExportDialog } from '@/components/dashboard/DashboardExportDialog'
 import { KPICard } from '@/components/dashboard/KPICard'
 import { DashboardCharts } from '@/components/dashboard/DashboardCharts'
 import { PcpAllBusPanel } from '@/components/pcp/PcpAllBusPanel'
@@ -14,35 +15,39 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useDashboardStore } from '@/stores/useDashboardStore'
 import { usePcpStore } from '@/stores/usePcpStore'
 import { useAppStore } from '@/stores/useAppStore'
+import { canCreatePcp, isPcpAdminScope } from '@/lib/roles'
 import { formatAed, formatCurrency, formatPercent } from '@/lib/utils'
 
 export function Dashboard() {
   const { metrics, loading, fetchMetrics } = useDashboardStore()
-  const { pcpRole, businessUnit, currentUserId } = useAppStore()
+  const { systemRole, pcpRole, businessUnit, currentUserId } = useAppStore()
   const { requests, masters, loading: pcpLoading, fetchRequests, fetchMasters } = usePcpStore()
-  const isAdmin = pcpRole === 'Admin'
+  const isHr = systemRole === 'HR'
+  const showPcpData = systemRole === 'Admin' || isHr || (systemRole === 'Manager' && !!pcpRole)
+  const isPcpAdmin = isPcpAdminScope(systemRole, pcpRole)
+  const [exportOpen, setExportOpen] = useState(false)
 
   useEffect(() => { fetchMetrics() }, [fetchMetrics])
 
   useEffect(() => {
-    if (!pcpRole) return
+    if (!showPcpData) return
     fetchRequests({
-      role: isAdmin ? 'Admin' : pcpRole,
-      businessUnit: isAdmin ? '' : businessUnit,
+      role: systemRole === 'Admin' || isHr ? 'Admin' : pcpRole!,
+      businessUnit: systemRole === 'Admin' || isHr ? '' : businessUnit,
       userId: currentUserId,
     })
     fetchMasters()
-  }, [pcpRole, isAdmin, businessUnit, currentUserId, fetchRequests, fetchMasters])
+  }, [showPcpData, systemRole, isHr, pcpRole, businessUnit, currentUserId, fetchRequests, fetchMasters])
 
   const pcpStats = useMemo(() => {
-    if (!pcpRole) return null
+    if (!showPcpData) return null
     const inApproval = requests.filter((r) => r.status === 'In Approval').length
     const approved = requests.filter((r) => r.status === 'Approved').length
     const draft = requests.filter((r) => r.status === 'Draft').length
     const monthly = requests.reduce((s, r) => s + (r.monthlyTotal || 0), 0)
     const slaAtRisk = requests.filter((r) => r.status === 'In Approval' && (r.slaHoursRemaining ?? 999) <= 24).length
     return { total: requests.length, inApproval, approved, draft, monthly, slaAtRisk }
-  }, [pcpRole, requests])
+  }, [showPcpData, requests])
 
   if (loading || !metrics) {
     return (
@@ -63,60 +68,78 @@ export function Dashboard() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
-            Projects, workforce, budgets{isAdmin ? ' · all business units' : pcpRole ? ` · ${businessUnit}` : ''}
+            {isHr ? 'Workforce & personnel planning' : `Projects, workforce, budgets${isPcpAdmin ? ' · all business units' : pcpRole ? ` · ${businessUnit}` : ''}`}
           </p>
         </div>
-        {pcpRole && (pcpRole === 'Requester' || pcpRole === 'Admin') && (
-          <div className="flex flex-wrap gap-2">
-            <Link to="/pcp/new">
-              <Button className="bg-[#E31E24] hover:bg-[#c9191f]">
-                <FilePlus className="h-4 w-4" /> New PCP
-              </Button>
-            </Link>
-            {isAdmin && (
-              <>
-                <Link to="/pcp/all"><Button variant="outline" size="sm"><FileText className="h-4 w-4" /> All PCPs</Button></Link>
-                <Link to="/pcp/approval"><Button variant="outline" size="sm"><CheckSquare className="h-4 w-4" /> Approvals</Button></Link>
-              </>
-            )}
-          </div>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => setExportOpen(true)}>
+            <Download className="h-4 w-4" /> Export
+          </Button>
+        {canCreatePcp(systemRole, pcpRole) && (
+          <Link to="/pcp/new">
+            <Button className="bg-[#E31E24] hover:bg-[#c9191f]">
+              <FilePlus className="h-4 w-4" /> New PCP
+            </Button>
+          </Link>
         )}
+        {isPcpAdmin && (
+          <>
+            <Link to="/pcp/all"><Button variant="outline" size="sm"><FileText className="h-4 w-4" /> PCPs</Button></Link>
+            <Link to="/pcp/approval"><Button variant="outline" size="sm"><CheckSquare className="h-4 w-4" /> Approvals</Button></Link>
+          </>
+        )}
+        </div>
       </div>
 
+      <DashboardExportDialog
+        open={exportOpen}
+        onClose={() => setExportOpen(false)}
+        metrics={metrics}
+        pdfOptions={{
+          scopeLabel: isPcpAdmin ? 'All business units' : pcpRole ? businessUnit : isHr ? 'HR — organization' : 'Organization',
+          pcpStats: pcpStats ?? undefined,
+        }}
+      />
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {/* Project delivery */}
-        <KPICard
-          title="Active Projects"
-          value={kpis.activeProjects}
-          icon={FolderKanban}
-          trend={kpis.projectGrowthTrend}
-          subtitle={`${kpis.totalProjects} total · ${kpis.completedProjects} completed`}
-        />
+        {!isHr && (
+          <KPICard
+            title="Active Projects"
+            value={kpis.activeProjects}
+            icon={FolderKanban}
+            trend={kpis.projectGrowthTrend}
+            subtitle={`${kpis.totalProjects} total · ${kpis.completedProjects} completed`}
+          />
+        )}
         <KPICard
           title="Employees"
           value={kpis.totalEmployees}
           icon={Users}
           subtitle={`${kpis.availableResources} available · ${kpis.allocatedResources} allocated`}
         />
-        <KPICard
-          title="Budget Utilization"
-          value={formatPercent(kpis.budgetUtilization)}
-          icon={Wallet}
-          subtitle={`${formatCurrency(kpis.totalActualCost)} of ${formatCurrency(kpis.totalBudget)} spent`}
-        />
-        <KPICard
-          title="Actual Project Cost"
-          value={formatCurrency(kpis.totalActualCost)}
-          icon={DollarSign}
-          trend={kpis.monthlyCostTrend}
-          subtitle={`${formatCurrency(kpis.totalPlannedCost)} planned`}
-        />
-        <KPICard
-          title="Revenue"
-          value={formatCurrency(kpis.totalRevenue)}
-          icon={TrendingUp}
-          subtitle={`${formatPercent(kpis.profitMargin)} margin · ${formatCurrency(kpis.profit)} profit`}
-        />
+        {!isHr && (
+          <>
+            <KPICard
+              title="Budget Utilization"
+              value={formatPercent(kpis.budgetUtilization)}
+              icon={Wallet}
+              subtitle={`${formatCurrency(kpis.totalActualCost)} of ${formatCurrency(kpis.totalBudget)} spent`}
+            />
+            <KPICard
+              title="Actual Project Cost"
+              value={formatCurrency(kpis.totalActualCost)}
+              icon={DollarSign}
+              trend={kpis.monthlyCostTrend}
+              subtitle={`${formatCurrency(kpis.totalPlannedCost)} planned`}
+            />
+            <KPICard
+              title="Revenue"
+              value={formatCurrency(kpis.totalRevenue)}
+              icon={TrendingUp}
+              subtitle={`${formatPercent(kpis.profitMargin)} margin · ${formatCurrency(kpis.profit)} profit`}
+            />
+          </>
+        )}
 
         {/* Personnel cost planning — distinct from project metrics above */}
         {pcpStats && (
@@ -137,7 +160,7 @@ export function Dashboard() {
               icon={Clock}
               subtitle="Monthly run-rate from open PCPs"
             />
-            {isAdmin && pcpStats.slaAtRisk > 0 && (
+            {isPcpAdmin && pcpStats.slaAtRisk > 0 && (
               <KPICard
                 title="Approvals at SLA Risk"
                 value={pcpStats.slaAtRisk}
@@ -150,9 +173,9 @@ export function Dashboard() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <DashboardCharts metrics={metrics} />
+        {!isHr && <DashboardCharts metrics={metrics} />}
 
-        {pcpRole && !isAdmin && !pcpLoading && (
+        {showPcpData && !isPcpAdmin && !pcpLoading && (
           <Card>
             <CardHeader><CardTitle>Recent PCP Requests</CardTitle></CardHeader>
             <CardContent className="space-y-3">
@@ -170,7 +193,7 @@ export function Dashboard() {
           </Card>
         )}
 
-        {pcpRole && isAdmin && !pcpLoading && (
+        {showPcpData && isPcpAdmin && !pcpLoading && (
           <PcpAllBusPanel requests={requests} businessUnits={masters?.businessUnits} />
         )}
       </div>

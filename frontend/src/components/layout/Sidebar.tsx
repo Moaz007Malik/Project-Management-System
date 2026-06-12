@@ -7,7 +7,7 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '@/stores/useAppStore'
-import { getPcpNavForRole } from '@/lib/pcpNav'
+import { filterNavByRole, getPcpNavForUser } from '@/lib/roles'
 
 interface NavItem {
   to: string
@@ -41,25 +41,27 @@ const pcpIconByPath: Record<string, typeof FilePlus> = {
   '/pcp/revisions': History,
   '/pcp/executive': BarChart3,
   '/pcp/insights': Sparkles,
-  '/pcp/admin': Settings,
 }
 
 export function Sidebar() {
-  const { sidebarOpen, setSidebarOpen, pcpRole } = useAppStore()
-  const pcpNavItems = getPcpNavForRole(pcpRole)
+  const { sidebarOpen, setSidebarOpen, systemRole, pcpRole } = useAppStore()
+  const pcpNavItems = getPcpNavForUser(systemRole, pcpRole)
 
-  const navItems: NavItem[] = [
-    ...baseNavItems,
-    ...pcpNavItems
-      .filter((item) => !baseNavItems.some((b) => b.to === item.to))
-      .map((item) => ({
-        to: item.to,
-        icon: pcpIconByPath[item.to] || item.icon,
-        label: item.label,
-        pcp: true,
-      })),
-    ...trailingNavItems,
-  ]
+  const navItems: NavItem[] = filterNavByRole(
+    [
+      ...baseNavItems,
+      ...pcpNavItems
+        .filter((item) => !baseNavItems.some((b) => b.to === item.to))
+        .map((item) => ({
+          to: item.to,
+          icon: pcpIconByPath[item.to] || item.icon,
+          label: item.label,
+          pcp: true,
+        })),
+      ...trailingNavItems,
+    ],
+    systemRole,
+  )
 
   return (
     <aside

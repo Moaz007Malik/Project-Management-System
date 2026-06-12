@@ -40,7 +40,7 @@ export function AssigneeSuggestions({ skills, taskId, onSelect, fetchSuggestions
         <Card
           key={s.employee.id}
           className={cn(
-            'cursor-pointer transition-all hover:shadow-md',
+            'cursor-pointer',
             s.isBestMatch && 'ring-2 ring-primary/30 bg-primary/5'
           )}
           onClick={() => onSelect?.(s.employee.id)}

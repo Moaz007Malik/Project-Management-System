@@ -65,7 +65,7 @@ export function Reports() {
         {reportTypes.map((rt) => (
           <Card
             key={rt.id}
-            className="cursor-pointer transition-all hover:scale-[1.02] hover:shadow-lg"
+            className="cursor-pointer"
             onClick={() => generateReport(rt.id)}
           >
             <CardContent className="p-5">

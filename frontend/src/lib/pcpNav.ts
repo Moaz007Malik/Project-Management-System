@@ -1,6 +1,6 @@
 import {
   FilePlus, List, CheckSquare, History,
-  BarChart3, Sparkles, Settings, Building2,
+  BarChart3, Sparkles, Building2,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import type { PcpRole } from '@/types'
@@ -31,7 +31,6 @@ export function getPcpNavForRole(role: PcpRole | null | undefined): PcpNavItem[]
         { to: '/pcp/all', icon: Building2, label: 'PCPs' },
         { to: '/pcp/approval', icon: CheckSquare, label: 'Approval Queue' },
         { to: '/pcp/revisions', icon: History, label: 'Revision History' },
-        { to: '/pcp/admin', icon: Settings, label: 'Masters' },
       ]
     case 'Executive':
       return [

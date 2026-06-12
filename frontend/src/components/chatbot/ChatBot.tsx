@@ -1,21 +1,45 @@
-import { useState } from 'react'
-import { MessageCircle, X, Bot } from 'lucide-react'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+import { X, Bot } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { CHATBOT_NAME } from '@/lib/chatbotEngine'
+import { useAppStore } from '@/stores/useAppStore'
+import { useAssistantStore } from '@/stores/useAssistantStore'
+import { useChatBotStore } from '@/stores/useChatBotStore'
 import { AssistantPanel } from './AssistantPanel'
 
 export function ChatBot() {
-  const [open, setOpen] = useState(false)
+  const location = useLocation()
+  const { open, pendingQuery, openChat, closeChat, clearPendingQuery } = useChatBotStore()
+  const { pcpRole, businessUnit, currentUserId } = useAppStore()
+  const send = useAssistantStore((s) => s.send)
+
+  useEffect(() => {
+    if (!open || !pendingQuery) return
+    const query = pendingQuery
+    clearPendingQuery()
+    void send(query, location.pathname, pcpRole || 'Requester', businessUnit, currentUserId)
+  }, [
+    open,
+    pendingQuery,
+    clearPendingQuery,
+    send,
+    location.pathname,
+    pcpRole,
+    businessUnit,
+    currentUserId,
+  ])
 
   return (
     <>
       {!open && (
         <Button
-          onClick={() => setOpen(true)}
+          onClick={() => openChat()}
           className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-[#E31E24] shadow-xl hover:bg-[#c9191f]"
           size="icon"
-          aria-label="Open Descon Chatbot"
+          aria-label={`Open ${CHATBOT_NAME}`}
         >
-          <MessageCircle className="h-6 w-6" />
+          <Bot className="h-6 w-6" />
         </Button>
       )}
 
@@ -27,11 +51,11 @@ export function ChatBot() {
                 <Bot className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-semibold">Descon Chatbot</p>
+                <p className="text-sm font-semibold">{CHATBOT_NAME}</p>
                 <p className="text-[10px] text-muted-foreground">Projects, PCP, budgets &amp; skills</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setOpen(false)}>
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={closeChat}>
               <X className="h-4 w-4" />
             </Button>
           </div>

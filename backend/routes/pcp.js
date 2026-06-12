@@ -467,7 +467,7 @@ router.post('/assistant', async (req, res) => {
 
     if (lower.includes('summarize') || lower.includes('activity this month')) {
       return res.json({
-        text: `This month: ${requests.filter((r) => r.status === 'In Approval').length} PCPs in approval, ${requests.filter((r) => r.status === 'Approved').length} approved. Avg approval TAT 2.1 days. Notable: night-shift revisions on Project A.`,
+        text: `This month: ${requests.filter((r) => r.status === 'In Approval').length} PCPs in approval, ${requests.filter((r) => r.status === 'Approved').length} approved. Avg approval TAT 2.1 days. Notable: night-shift revisions on ADNOC Refinery Electrical Turnaround.`,
         source: `Based on ${requests.length} PCP records, Jun 2026`,
         actions: ['Export PDF'],
       });
@@ -484,7 +484,7 @@ router.post('/assistant', async (req, res) => {
 
     res.json({
       text: 'I can help with vacant positions, budget variance, revision comparisons, forecasts, and PCP summaries. Try one of the suggested questions.',
-      source: 'Descon Chatbot',
+      source: 'CORVI - The AI Assistant',
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

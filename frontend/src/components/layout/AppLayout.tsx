@@ -5,13 +5,16 @@ import { TopNav } from './TopNav'
 import { useAppStore } from '@/stores/useAppStore'
 import { useNotificationStore } from '@/stores/useNotificationStore'
 import { useEmployeeStore } from '@/stores/useEmployeeStore'
+import { useAuthStore } from '@/stores/useAuthStore'
 import { cn } from '@/lib/utils'
 import { ChatBot } from '@/components/chatbot/ChatBot'
+import { Footer } from '@/components/layout/Footer'
 
 export function AppLayout() {
-  const { darkMode, sidebarOpen, currentUserId, syncFromEmployee } = useAppStore()
+  const { darkMode, sidebarOpen, syncFromEmployee } = useAppStore()
+  const { user } = useAuthStore()
   const { fetchNotifications } = useNotificationStore()
-  const { fetchEmployees, employees } = useEmployeeStore()
+  const { fetchEmployees } = useEmployeeStore()
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode)
@@ -23,18 +26,21 @@ export function AppLayout() {
   }, [fetchNotifications, fetchEmployees])
 
   useEffect(() => {
-    const employee = employees.find((e) => e.id === currentUserId)
-    if (employee) syncFromEmployee(employee)
-  }, [employees, currentUserId, syncFromEmployee])
+    if (user) syncFromEmployee(user)
+  }, [user, syncFromEmployee])
 
   return (
     <div className={cn('min-h-screen gradient-bg', darkMode && 'dark')}>
       <Sidebar />
-      <div className="transition-all duration-300" style={{ marginLeft: sidebarOpen ? 256 : 72 }}>
+      <div
+        className="flex min-h-screen flex-col transition-all duration-300"
+        style={{ marginLeft: sidebarOpen ? 256 : 72 }}
+      >
         <TopNav />
-        <main className="p-6">
+        <main className="flex-1 p-6">
           <Outlet />
         </main>
+        <Footer />
       </div>
       <ChatBot />
     </div>

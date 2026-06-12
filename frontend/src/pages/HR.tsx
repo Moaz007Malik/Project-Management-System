@@ -41,7 +41,7 @@ export function HR() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {employees.map((emp) => (
-          <Card key={emp.id} className="cursor-pointer transition-all hover:scale-[1.02] hover:shadow-lg" onClick={() => navigate(`/hr/${emp.id}`)}>
+          <Card key={emp.id} className="cursor-pointer" onClick={() => navigate(`/hr/${emp.id}`)}>
             <CardContent className="p-5 space-y-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">

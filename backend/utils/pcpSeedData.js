@@ -1,5 +1,5 @@
 export const pcpMasters = {
-  clients: ['Project A', 'Project B', 'Project C'],
+  clients: ['ADNOC Refinery Electrical Turnaround', 'Ruwais Piping & Welding Package', 'Ruwais MEP Campus Build'],
   locations: ['Abu Dhabi', 'Dubai', 'Ruwais', 'Other'],
   recruitmentTypes: ['New Hire', 'Replacement', 'Transfer', 'Re-hire', 'Contract Extension'],
   businessUnits: ['Construction – North', 'MEP – East', 'Corporate HR', 'Logistics – South'],
@@ -32,7 +32,7 @@ export const pcpMasters = {
     { code: 'CC106', name: 'Electrical' },
     { code: 'CC201', name: 'Corporate HR' },
   ],
-  reportingLines: ['Ali Khan – Construction Manager', 'Sara Malik – HSE Lead', 'Omar Farid – HR Director'],
+  reportingLines: ['Bilal Ahmed – Construction Manager', 'Saira Malik – HSE Lead', 'Hassan Raza – HR Director'],
 };
 
 export const pcpApprovalChains = [
@@ -60,7 +60,7 @@ export const pcpRequests = [
   {
     id: 'pcp-1',
     pcpNo: 'PCP-2026-00041',
-    client: 'Project A',
+    client: 'ADNOC Refinery Electrical Turnaround',
     clientLocation: 'Abu Dhabi',
     recruitmentType: 'New Hire',
     issueDate: '2026-06-02',
@@ -68,7 +68,7 @@ export const pcpRequests = [
     businessUnit: 'Construction – North',
     wbs: 'W95-ENG-01',
     priority: 'Critical',
-    requestedBy: 'S. Imran',
+    requestedBy: 'Muhammad Imran',
     requestedById: 'emp-1',
     status: 'In Approval',
     currentStage: 'Finance Manager',
@@ -77,8 +77,8 @@ export const pcpRequests = [
     slaOverdue: false,
     sapSync: 'Not Connected',
     approvalTrail: [
-      { step: 'Submitted', by: 'S. Imran', at: '2026-06-02T09:00:00Z', tatHours: null },
-      { step: 'Approved', by: 'BU Head (Fatima Al Noor)', at: '2026-06-03T18:00:00Z', tatHours: 9 },
+      { step: 'Submitted', by: 'Muhammad Imran', at: '2026-06-02T09:00:00Z', tatHours: null },
+      { step: 'Approved', by: 'BU Head (Fatima Bukhari)', at: '2026-06-03T18:00:00Z', tatHours: 9 },
       { step: 'Pending', by: 'Finance Manager', at: null, slaDue: '2026-06-05T18:00:00Z' },
     ],
     positions: [
@@ -93,7 +93,7 @@ export const pcpRequests = [
         workLocation: 'Site',
         plannedStart: '2026-08-01',
         plannedDemob: '2027-08-01',
-        reportingLine: 'Ali Khan – Construction Manager',
+        reportingLine: 'Bilal Ahmed – Construction Manager',
         marketSalary: 12000,
         proposedSalary: 12500,
         salaryOnHired: null,
@@ -121,7 +121,7 @@ export const pcpRequests = [
         workLocation: 'Site',
         plannedStart: '2026-09-01',
         plannedDemob: null,
-        reportingLine: 'Ali Khan – Construction Manager',
+        reportingLine: 'Bilal Ahmed – Construction Manager',
         marketSalary: 15000,
         proposedSalary: 14800,
         benefits: [benefitAmount('Housing', 2500), benefitAmount('Medical', 600)],
@@ -146,7 +146,7 @@ export const pcpRequests = [
   {
     id: 'pcp-2',
     pcpNo: 'PCP-2026-00038',
-    client: 'Project B',
+    client: 'Ruwais Piping & Welding Package',
     clientLocation: 'Ruwais',
     recruitmentType: 'Replacement',
     issueDate: '2026-05-20',
@@ -154,7 +154,7 @@ export const pcpRequests = [
     businessUnit: 'MEP – East',
     wbs: 'W95-EL-01',
     priority: 'Urgent',
-    requestedBy: 'S. Imran',
+    requestedBy: 'Muhammad Imran',
     requestedById: 'emp-1',
     status: 'Approved',
     currentStage: 'Closed',
@@ -162,7 +162,7 @@ export const pcpRequests = [
     slaHoursRemaining: 0,
     sapSync: 'Not Connected',
     approvalTrail: [
-      { step: 'Submitted', by: 'S. Imran', at: '2026-05-20T08:00:00Z' },
+      { step: 'Submitted', by: 'Muhammad Imran', at: '2026-05-20T08:00:00Z' },
       { step: 'Approved', by: 'BU Head', at: '2026-05-21T12:00:00Z', tatHours: 28 },
       { step: 'Approved', by: 'Finance Manager', at: '2026-05-22T10:00:00Z', tatHours: 22 },
     ],
@@ -199,7 +199,7 @@ export const pcpRequests = [
   {
     id: 'pcp-3',
     pcpNo: 'PCP-2026-00035',
-    client: 'Project A',
+    client: 'ADNOC Refinery Electrical Turnaround',
     clientLocation: 'Dubai',
     recruitmentType: 'New Hire',
     issueDate: '2026-05-10',
@@ -207,7 +207,7 @@ export const pcpRequests = [
     businessUnit: 'Construction – North',
     wbs: 'W95-ENG-01',
     priority: 'Normal',
-    requestedBy: 'S. Imran',
+    requestedBy: 'Muhammad Imran',
     requestedById: 'emp-1',
     status: 'Draft',
     currentStage: 'Draft',
@@ -250,7 +250,7 @@ export const pcpRevisions = [
     id: 'rev-1-0',
     pcpId: 'pcp-1',
     revision: 0,
-    author: 'S. Imran',
+    author: 'Muhammad Imran',
     date: '2026-06-02',
     status: 'Superseded',
     summary: 'Original submission: 2 Electricians (Day shift), 1 Site Engineer.',
@@ -267,7 +267,7 @@ export const pcpRevisions = [
     id: 'rev-1-1',
     pcpId: 'pcp-1',
     revision: 1,
-    author: 'S. Imran',
+    author: 'Muhammad Imran',
     date: '2026-06-02',
     status: 'Approved',
     justification: 'Added night-shift allowance per site requirements.',
@@ -290,7 +290,7 @@ export const pcpRevisions = [
     id: 'rev-1-2',
     pcpId: 'pcp-1',
     revision: 2,
-    author: 'S. Imran',
+    author: 'Muhammad Imran',
     date: '2026-06-03',
     status: 'In Approval',
     justification: 'Cost center reallocation per finance guidance.',
@@ -312,7 +312,7 @@ export const pcpRevisions = [
     id: 'rev-2-0',
     pcpId: 'pcp-2',
     revision: 0,
-    author: 'S. Imran',
+    author: 'Muhammad Imran',
     date: '2026-05-20',
     status: 'Superseded',
     summary: 'Initial request: 4 Welders for Ruwais piping package.',
@@ -328,7 +328,7 @@ export const pcpRevisions = [
     id: 'rev-2-1',
     pcpId: 'pcp-2',
     revision: 1,
-    author: 'S. Imran',
+    author: 'Muhammad Imran',
     date: '2026-05-21',
     status: 'Approved',
     justification: 'Piping scope increased — 2 additional welders required per site mobilization plan.',
@@ -350,10 +350,10 @@ export const pcpRevisions = [
     id: 'rev-3-0',
     pcpId: 'pcp-3',
     revision: 0,
-    author: 'S. Imran',
+    author: 'Muhammad Imran',
     date: '2026-05-10',
     status: 'Draft',
-    summary: 'Draft: 1 Safety Officer for Project A Dubai site.',
+    summary: 'Draft: 1 Safety Officer for ADNOC Refinery Electrical Turnaround — Dubai site.',
     snapshot: {
       monthlyTotal: 11700,
       headcount: 1,
@@ -368,7 +368,7 @@ export const pcpInsights = {
   needs: [
     {
       id: 'need-1',
-      title: 'Project B – Piping phase starts Sep',
+      title: 'Ruwais Piping & Welding Package – Piping phase starts Sep',
       description: 'Projected need: 14 Welders, 6 Riggers',
       recommendation: 'External Staffing Agency recommended',
       recommendationType: 'external',
@@ -379,7 +379,7 @@ export const pcpInsights = {
     },
     {
       id: 'need-2',
-      title: 'Project A – Electrician vacancies ageing',
+      title: 'ADNOC Refinery Electrical Turnaround – Electrician vacancies ageing',
       description: '3 Electrician roles vacant 45+ days on night shift',
       recommendation: 'In-house pool – 2 matches available',
       recommendationType: 'inhouse',
@@ -403,15 +403,15 @@ export const pcpInsights = {
       { costCenter: 'CC106', variance: 6.2, note: 'Electrician night-shift premiums' },
     ],
   },
-  weeklySummary: 'Vacant Electrician roles are ageing fastest on Project A. Night-shift conversions added AED 14,000/month since Rev. 1 approvals. Recommend agency sourcing for 3 critical roles.',
+  weeklySummary: 'Vacant Electrician roles are ageing fastest on ADNOC Refinery Electrical Turnaround. Night-shift conversions added AED 14,000/month since Rev. 1 approvals. Recommend agency sourcing for 3 critical roles.',
 };
 
 export const executiveDashboard = {
   headcount: { total: 1240, filled: 1082, vacant: 158, onHold: 12 },
   headcountByProject: [
-    { project: 'Project A', filled: 420, vacant: 58 },
-    { project: 'Project B', filled: 380, vacant: 62 },
-    { project: 'Project C', filled: 282, vacant: 38 },
+    { project: 'ADNOC Refinery Electrical Turnaround', filled: 420, vacant: 58 },
+    { project: 'Ruwais Piping & Welding Package', filled: 380, vacant: 62 },
+    { project: 'Ruwais MEP Campus Build', filled: 282, vacant: 38 },
   ],
   budgetVsActual: [
     { costCenter: 'CC305', budget: 820000, actual: 785000 },

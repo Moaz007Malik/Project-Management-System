@@ -105,7 +105,7 @@ export function Projects() {
           return (
             <Card
               key={project.id}
-              className="group cursor-pointer overflow-hidden border-border/60 bg-card/90 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-xl"
+              className="group cursor-pointer overflow-hidden border-border/60 bg-card/90 shadow-sm"
               onClick={() => navigate(`/projects/${project.id}`)}
             >
               <div className={cn('h-1.5 bg-gradient-to-r', accent)} />

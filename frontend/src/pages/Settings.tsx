@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Moon, Sun, Bell, Shield } from 'lucide-react'
+import { Moon, Sun, Bell, Shield, LogOut } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Select } from '@/components/ui/select'
 import { useAppStore } from '@/stores/useAppStore'
-import { useEmployeeStore } from '@/stores/useEmployeeStore'
+import { useAuthStore } from '@/stores/useAuthStore'
+import { canAccessAuditLog, SYSTEM_ROLE_LABELS } from '@/lib/roles'
 import { api } from '@/lib/api'
 import type { AuditLog } from '@/types'
 import { formatDistanceToNow } from 'date-fns'
@@ -18,19 +19,22 @@ const NOTIF_LABELS: Record<string, string> = {
 }
 
 export function Settings() {
+  const navigate = useNavigate()
   const {
     darkMode, toggleDarkMode, notificationPrefs, toggleNotificationPref,
-    currentUserId, setCurrentUser, pcpRole, businessUnit,
+    systemRole, pcpRole, businessUnit,
   } = useAppStore()
-  const { employees, fetchEmployees } = useEmployeeStore()
+  const { user, logout } = useAuthStore()
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([])
 
   useEffect(() => {
     api.get<AuditLog[]>('/audit-logs?limit=20').then(setAuditLogs)
-    fetchEmployees()
-  }, [fetchEmployees])
+  }, [])
 
-  const currentUser = employees.find((e) => e.id === currentUserId)
+  const handleLogout = () => {
+    logout()
+    navigate('/login', { replace: true })
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -42,41 +46,33 @@ export function Settings() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Current User</CardTitle>
-            <CardDescription>
-              One profile for Project Management and Personnel Cost Planning — role and business unit follow the selected person
-            </CardDescription>
+            <CardTitle>Account</CardTitle>
+            <CardDescription>Signed-in user and role-based access</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Select
-              value={currentUserId}
-              onChange={(e) => {
-                const employee = employees.find((emp) => emp.id === e.target.value)
-                if (employee) setCurrentUser(employee)
-              }}
-            >
-              {employees.map((e) => (
-                <option key={e.id} value={e.id}>
-                  {e.fullName} — {e.designation}
-                  {e.pcpRole ? ` (${e.pcpRole})` : ''}
-                </option>
-              ))}
-            </Select>
-            {currentUser && (
+            {user && (
               <div className="rounded-lg border border-border bg-muted/30 p-3 text-sm space-y-1">
-                <p className="text-muted-foreground">{currentUser.email}</p>
-                <p><span className="text-muted-foreground">Department:</span> {currentUser.department}</p>
+                <p className="font-medium">{user.fullName}</p>
+                <p className="text-muted-foreground">{user.email}</p>
+                <p><span className="text-muted-foreground">Department:</span> {user.department}</p>
+                <p>
+                  <span className="text-muted-foreground">System role:</span>{' '}
+                  <span className="font-medium">{SYSTEM_ROLE_LABELS[systemRole]}</span>
+                </p>
                 {pcpRole ? (
                   <p>
-                    <span className="text-muted-foreground">PCP access:</span>{' '}
+                    <span className="text-muted-foreground">PCP workflow:</span>{' '}
                     <span className="font-medium text-[#E31E24]">{pcpRole}</span>
                     {' · '}{businessUnit}
                   </p>
                 ) : (
-                  <p className="text-muted-foreground">No PCP module role — project &amp; HR access only</p>
+                  <p className="text-muted-foreground">No PCP workflow role</p>
                 )}
               </div>
             )}
+            <Button variant="outline" className="w-full" onClick={handleLogout}>
+              <LogOut className="h-4 w-4" /> Sign out
+            </Button>
           </CardContent>
         </Card>
 
@@ -117,25 +113,27 @@ export function Settings() {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Shield className="h-5 w-5" />Audit Log</CardTitle>
-            <CardDescription>All major actions persisted to auditlogs.json</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2 max-h-80 overflow-y-auto">
-              {auditLogs.map((log) => (
-                <div key={log.id} className="flex items-start gap-3 rounded-lg border border-border p-3 text-sm">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-bold">{log.action[0]}</div>
-                  <div className="flex-1">
-                    <p className="font-medium">{log.details}</p>
-                    <p className="text-xs text-muted-foreground">{log.action} · {log.entity} · {formatDistanceToNow(new Date(log.timestamp), { addSuffix: true })}</p>
+        {canAccessAuditLog(systemRole) && (
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><Shield className="h-5 w-5" />Audit Log</CardTitle>
+              <CardDescription>All major actions persisted to auditlogs.json</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 max-h-80 overflow-y-auto">
+                {auditLogs.map((log) => (
+                  <div key={log.id} className="flex items-start gap-3 rounded-lg border border-border p-3 text-sm">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-bold">{log.action[0]}</div>
+                    <div className="flex-1">
+                      <p className="font-medium">{log.details}</p>
+                      <p className="text-xs text-muted-foreground">{log.action} · {log.entity} · {formatDistanceToNow(new Date(log.timestamp), { addSuffix: true })}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   )

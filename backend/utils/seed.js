@@ -6,6 +6,7 @@ import {
   pcpRevisions,
   pcpApprovalChains,
 } from './pcpSeedData.js';
+import { hashPassword, defaultPasswordForRole } from '../services/authService.js';
 
 
 import dns from "dns";
@@ -16,10 +17,10 @@ if (process.env.FORCE_PUBLIC_DNS === "true") {
 
 
 const departments = [
-  { id: 'dept-1', name: 'Construction – North', head: 'Fatima Al Noor', employeeCount: 3 },
-  { id: 'dept-2', name: 'MEP – East', head: 'Omar Farid', employeeCount: 2 },
-  { id: 'dept-3', name: 'Corporate HR', head: 'Khalid Hassan', employeeCount: 3 },
-  { id: 'dept-4', name: 'Logistics – South', head: 'Sara Malik', employeeCount: 2 },
+  { id: 'dept-1', name: 'Construction – North', head: 'Fatima Bukhari', employeeCount: 3 },
+  { id: 'dept-2', name: 'MEP – East', head: 'Hamza Sheikh', employeeCount: 2 },
+  { id: 'dept-3', name: 'Corporate HR', head: 'Usman Malik', employeeCount: 3 },
+  { id: 'dept-4', name: 'Logistics – South', head: 'Saira Malik', employeeCount: 2 },
 ];
 
 const skillsList = [
@@ -36,22 +37,22 @@ const skillsList = [
 ];
 
 const employees = [
-  { id: 'emp-1', employeeId: 'DSC001', fullName: 'S. Imran', email: 'simran@descon.com', department: 'Construction – North', businessUnit: 'Construction – North', designation: 'Project Coordinator', pcpRole: 'Requester', active: true, skills: ['Project Management', 'HSE'], hourlyRate: 65, monthlySalary: 10400, capacityHours: 40, availability: 16, status: 'Allocated' },
-  { id: 'emp-2', employeeId: 'DSC002', fullName: 'Fatima Al Noor', email: 'fatima@descon.com', department: 'Construction – North', businessUnit: 'Construction – North', designation: 'BU Head', pcpRole: 'Approver', active: true, skills: ['Project Management', 'HSE'], hourlyRate: 110, monthlySalary: 17600, capacityHours: 40, availability: 8, status: 'Fully Allocated' },
-  { id: 'emp-3', employeeId: 'DSC003', fullName: 'Rajesh Menon', email: 'rajesh@descon.com', department: 'Corporate HR', businessUnit: 'Corporate HR', designation: 'Finance Manager', pcpRole: 'Approver', active: true, skills: ['Project Management'], hourlyRate: 95, monthlySalary: 15200, capacityHours: 40, availability: 12, status: 'Allocated' },
-  { id: 'emp-4', employeeId: 'DSC004', fullName: 'Khalid Hassan', email: 'khalid@descon.com', department: 'Corporate HR', businessUnit: 'Corporate HR', designation: 'HR Systems Admin', pcpRole: 'Admin', active: true, skills: ['Project Management', 'Logistics'], hourlyRate: 90, monthlySalary: 14400, capacityHours: 40, availability: 10, status: 'Allocated' },
-  { id: 'emp-5', employeeId: 'DSC005', fullName: 'Layla Mansour', email: 'layla@descon.com', department: 'Corporate HR', businessUnit: 'Corporate HR', designation: 'VP Operations', pcpRole: 'Executive', active: true, skills: ['Project Management'], hourlyRate: 120, monthlySalary: 19200, capacityHours: 40, availability: 20, status: 'Allocated' },
-  { id: 'emp-6', employeeId: 'DSC006', fullName: 'Ali Khan', email: 'ali.khan@descon.com', department: 'Construction – North', businessUnit: 'Construction – North', designation: 'Site Engineer', skills: ['Mechanical', 'HSE', 'Project Management'], hourlyRate: 85, monthlySalary: 13600, capacityHours: 40, availability: 18, status: 'Allocated' },
-  { id: 'emp-7', employeeId: 'DSC007', fullName: 'Omar Farid', email: 'omar.farid@descon.com', department: 'MEP – East', businessUnit: 'MEP – East', designation: 'MEP Manager', pcpRole: 'Approver', active: true, skills: ['Electrical', 'Piping', 'Project Management'], hourlyRate: 100, monthlySalary: 16000, capacityHours: 40, availability: 14, status: 'Allocated' },
-  { id: 'emp-8', employeeId: 'DSC008', fullName: 'Priya Sharma', email: 'priya.s@descon.com', department: 'MEP – East', businessUnit: 'MEP – East', designation: 'Electrician', skills: ['Electrical'], hourlyRate: 55, monthlySalary: 8800, capacityHours: 40, availability: 24, status: 'Available' },
-  { id: 'emp-9', employeeId: 'DSC009', fullName: 'Ahmed Hassan', email: 'ahmed.h@descon.com', department: 'Construction – North', businessUnit: 'Construction – North', designation: 'Welder', skills: ['Welding', 'Rigging'], hourlyRate: 50, monthlySalary: 8000, capacityHours: 40, availability: 22, status: 'Available' },
-  { id: 'emp-10', employeeId: 'DSC010', fullName: 'Anna Kowalski', email: 'anna.k@descon.com', department: 'Logistics – South', businessUnit: 'Logistics – South', designation: 'Rigger', skills: ['Rigging', 'Scaffolding'], hourlyRate: 48, monthlySalary: 7680, capacityHours: 40, availability: 0, status: 'On Leave' },
+  { id: 'emp-1', employeeId: 'DSC001', fullName: 'Muhammad Imran', email: 'manager@descon.com', department: 'Construction – North', businessUnit: 'Construction – North', designation: 'Project Coordinator', systemRole: 'Manager', pcpRole: 'Requester', active: true, skills: ['Project Management', 'HSE'], hourlyRate: 65, monthlySalary: 10400, capacityHours: 40, availability: 16, status: 'Allocated' },
+  { id: 'emp-2', employeeId: 'DSC002', fullName: 'Fatima Bukhari', email: 'fatima@descon.com', department: 'Construction – North', businessUnit: 'Construction – North', designation: 'BU Head', systemRole: 'Manager', pcpRole: 'Approver', active: true, skills: ['Project Management', 'HSE'], hourlyRate: 110, monthlySalary: 17600, capacityHours: 40, availability: 8, status: 'Fully Allocated' },
+  { id: 'emp-3', employeeId: 'DSC003', fullName: 'Hassan Raza', email: 'hr@descon.com', department: 'Corporate HR', businessUnit: 'Corporate HR', designation: 'HR Manager', systemRole: 'HR', active: true, skills: ['Project Management', 'Human Resources'], hourlyRate: 95, monthlySalary: 15200, capacityHours: 40, availability: 12, status: 'Allocated' },
+  { id: 'emp-4', employeeId: 'DSC004', fullName: 'Usman Malik', email: 'admin@descon.com', department: 'Corporate HR', businessUnit: 'Corporate HR', designation: 'HR Systems Admin', systemRole: 'Admin', pcpRole: 'Admin', active: true, skills: ['Project Management', 'Logistics'], hourlyRate: 90, monthlySalary: 14400, capacityHours: 40, availability: 10, status: 'Allocated' },
+  { id: 'emp-5', employeeId: 'DSC005', fullName: 'Ayesha Siddiqui', email: 'ayesha.siddiqui@descon.com', department: 'Corporate HR', businessUnit: 'Corporate HR', designation: 'VP Operations', systemRole: 'Admin', pcpRole: 'Executive', active: true, skills: ['Project Management'], hourlyRate: 120, monthlySalary: 19200, capacityHours: 40, availability: 20, status: 'Allocated' },
+  { id: 'emp-6', employeeId: 'DSC006', fullName: 'Bilal Ahmed', email: 'bilal.ahmed@descon.com', department: 'Construction – North', businessUnit: 'Construction – North', designation: 'Site Engineer', systemRole: 'Manager', skills: ['Mechanical', 'HSE', 'Project Management'], hourlyRate: 85, monthlySalary: 13600, capacityHours: 40, availability: 18, status: 'Allocated' },
+  { id: 'emp-7', employeeId: 'DSC007', fullName: 'Hamza Sheikh', email: 'hamza.sheikh@descon.com', department: 'MEP – East', businessUnit: 'MEP – East', designation: 'MEP Manager', systemRole: 'Manager', pcpRole: 'Approver', active: true, skills: ['Electrical', 'Piping', 'Project Management'], hourlyRate: 100, monthlySalary: 16000, capacityHours: 40, availability: 14, status: 'Allocated' },
+  { id: 'emp-8', employeeId: 'DSC008', fullName: 'Zainab Khattak', email: 'zainab.khattak@descon.com', department: 'MEP – East', businessUnit: 'MEP – East', designation: 'Electrician', systemRole: 'Manager', skills: ['Electrical'], hourlyRate: 55, monthlySalary: 8800, capacityHours: 40, availability: 24, status: 'Available' },
+  { id: 'emp-9', employeeId: 'DSC009', fullName: 'Tariq Mehmood', email: 'tariq.mehmood@descon.com', department: 'Construction – North', businessUnit: 'Construction – North', designation: 'Welder', systemRole: 'Manager', skills: ['Welding', 'Rigging'], hourlyRate: 50, monthlySalary: 8000, capacityHours: 40, availability: 22, status: 'Available' },
+  { id: 'emp-10', employeeId: 'DSC010', fullName: 'Farah Qureshi', email: 'farah.qureshi@descon.com', department: 'Logistics – South', businessUnit: 'Logistics – South', designation: 'Rigger', systemRole: 'Manager', skills: ['Rigging', 'Scaffolding'], hourlyRate: 48, monthlySalary: 7680, capacityHours: 40, availability: 0, status: 'On Leave' },
 ];
 
 const projects = [
   {
-    id: 'proj-1', projectId: 'PRJ-A', name: 'Project A', client: 'ADNOC Refinery', description: 'Refinery turnaround and electrical manpower deployment',
-    projectManager: 'S. Imran', projectManagerId: 'emp-1', startDate: '2025-01-15', endDate: '2026-12-31',
+    id: 'proj-1', projectId: 'PRJ-A', name: 'ADNOC Refinery Electrical Turnaround', client: 'ADNOC Refinery', description: 'Refinery turnaround and electrical manpower deployment',
+    projectManager: 'Muhammad Imran', projectManagerId: 'emp-1', startDate: '2025-01-15', endDate: '2026-12-31',
     status: 'Active', budget: 8200000, revenue: 9500000, priority: 'High',
     phases: [
       { id: 'phase-1-1', name: 'Mobilization', milestones: [{ id: 'ms-1-1', name: 'Site Mobilization Complete', dueDate: '2025-03-01' }] },
@@ -60,8 +61,8 @@ const projects = [
     ],
   },
   {
-    id: 'proj-2', projectId: 'PRJ-B', name: 'Project B', client: 'ADNOC Piping', description: 'Piping phase manpower — welders, riggers, and HSE',
-    projectManager: 'Fatima Al Noor', projectManagerId: 'emp-2', startDate: '2025-06-01', endDate: '2027-03-31',
+    id: 'proj-2', projectId: 'PRJ-B', name: 'Ruwais Piping & Welding Package', client: 'ADNOC Piping', description: 'Piping phase manpower — welders, riggers, and HSE',
+    projectManager: 'Fatima Bukhari', projectManagerId: 'emp-2', startDate: '2025-06-01', endDate: '2027-03-31',
     status: 'Active', budget: 5400000, revenue: 6200000, priority: 'High',
     phases: [
       { id: 'phase-2-1', name: 'Piping Prep', milestones: [{ id: 'ms-2-1', name: 'Piping Phase Start', dueDate: '2025-09-01' }] },
@@ -69,8 +70,8 @@ const projects = [
     ],
   },
   {
-    id: 'proj-3', projectId: 'PRJ-C', name: 'Project C', client: 'Ruwais MEP Campus', description: 'MEP campus build — electrical and mechanical trades',
-    projectManager: 'Omar Farid', projectManagerId: 'emp-7', startDate: '2025-03-01', endDate: '2026-10-31',
+    id: 'proj-3', projectId: 'PRJ-C', name: 'Ruwais MEP Campus Build', client: 'Ruwais MEP Campus', description: 'MEP campus build — electrical and mechanical trades',
+    projectManager: 'Hamza Sheikh', projectManagerId: 'emp-7', startDate: '2025-03-01', endDate: '2026-10-31',
     status: 'Active', budget: 3100000, revenue: 3800000, priority: 'Medium',
     phases: [
       { id: 'phase-3-1', name: 'MEP Install', milestones: [{ id: 'ms-3-1', name: 'MEP Rough-in', dueDate: '2025-10-01' }] },
@@ -78,8 +79,8 @@ const projects = [
     ],
   },
   {
-    id: 'proj-4', projectId: 'PRJ-A2', name: 'Project A Extension', client: 'ADNOC Refinery', description: 'Night-shift electrical expansion on Project A',
-    projectManager: 'S. Imran', projectManagerId: 'emp-1', startDate: '2026-01-01', endDate: '2027-06-30',
+    id: 'proj-4', projectId: 'PRJ-A2', name: 'ADNOC Refinery Night-Shift Expansion', client: 'ADNOC Refinery', description: 'Night-shift electrical expansion on ADNOC Refinery Electrical Turnaround',
+    projectManager: 'Muhammad Imran', projectManagerId: 'emp-1', startDate: '2026-01-01', endDate: '2027-06-30',
     status: 'Planned', budget: 2800000, revenue: 3200000, priority: 'Medium',
     phases: [
       { id: 'phase-4-1', name: 'Planning', milestones: [{ id: 'ms-4-1', name: 'PCP Approved', dueDate: '2026-06-01' }] },
@@ -87,7 +88,7 @@ const projects = [
   },
   {
     id: 'proj-5', projectId: 'PRJ-HSE', name: 'HSE Compliance Program', client: 'Descon Corporate', description: 'Group-wide HSE audit and compliance remediation',
-    projectManager: 'Khalid Hassan', projectManagerId: 'emp-4', startDate: '2024-10-01', endDate: '2025-05-31',
+    projectManager: 'Usman Malik', projectManagerId: 'emp-4', startDate: '2024-10-01', endDate: '2025-05-31',
     status: 'Completed', budget: 450000, revenue: 520000, priority: 'High',
     phases: [
       { id: 'phase-5-1', name: 'Audit', milestones: [{ id: 'ms-5-1', name: 'Final Report', dueDate: '2025-05-31' }] },
@@ -191,29 +192,29 @@ const budgets = projects.map((p) => ({
 }));
 
 const risks = [
-  { id: 'risk-1', projectId: 'proj-1', risk: 'Electrician vacancies ageing 45+ days', probability: 'High', impact: 'High', mitigation: 'Agency sourcing for critical roles', owner: 'S. Imran', status: 'Open' },
-  { id: 'risk-2', projectId: 'proj-1', risk: 'Night-shift premium cost overrun', probability: 'Medium', impact: 'Medium', mitigation: 'PCP revision controls', owner: 'Fatima Al Noor', status: 'Monitoring' },
-  { id: 'risk-3', projectId: 'proj-2', risk: 'Welder shortage at Ruwais', probability: 'High', impact: 'High', mitigation: 'External staffing agency', owner: 'Omar Farid', status: 'Open' },
-  { id: 'risk-4', projectId: 'proj-2', risk: 'Piping phase delayed mobilization', probability: 'Medium', impact: 'Critical', mitigation: 'Accelerated recruitment PCP', owner: 'Fatima Al Noor', status: 'Mitigated' },
-  { id: 'risk-5', projectId: 'proj-3', risk: 'MEP trade certification gaps', probability: 'Low', impact: 'Medium', mitigation: 'Pre-mobilization training', owner: 'Omar Farid', status: 'Open' },
-  { id: 'risk-6', projectId: 'proj-3', risk: 'CC106 budget variance', probability: 'Medium', impact: 'Medium', mitigation: 'Monthly cost review with Finance', owner: 'Rajesh Menon', status: 'Monitoring' },
-  { id: 'risk-7', projectId: 'proj-4', risk: 'PCP approval delays', probability: 'Medium', impact: 'High', mitigation: 'SLA escalation to BU Head', owner: 'Khalid Hassan', status: 'Open' },
-  { id: 'risk-8', projectId: 'proj-4', risk: 'Agency rate inflation', probability: 'Medium', impact: 'Medium', mitigation: 'In-house pool prioritization', owner: 'Layla Mansour', status: 'Open' },
-  { id: 'risk-9', projectId: 'proj-1', risk: 'Cost center CC104 over budget', probability: 'High', impact: 'High', mitigation: 'Headcount freeze on non-critical roles', owner: 'Rajesh Menon', status: 'Monitoring' },
-  { id: 'risk-10', projectId: 'proj-2', risk: 'HSE compliance on night shifts', probability: 'Medium', impact: 'Critical', mitigation: 'Additional HSE officers', owner: 'Ali Khan', status: 'Open' },
+  { id: 'risk-1', projectId: 'proj-1', risk: 'Electrician vacancies ageing 45+ days', probability: 'High', impact: 'High', mitigation: 'Agency sourcing for critical roles', owner: 'Muhammad Imran', status: 'Open' },
+  { id: 'risk-2', projectId: 'proj-1', risk: 'Night-shift premium cost overrun', probability: 'Medium', impact: 'Medium', mitigation: 'PCP revision controls', owner: 'Fatima Bukhari', status: 'Monitoring' },
+  { id: 'risk-3', projectId: 'proj-2', risk: 'Welder shortage at Ruwais', probability: 'High', impact: 'High', mitigation: 'External staffing agency', owner: 'Hamza Sheikh', status: 'Open' },
+  { id: 'risk-4', projectId: 'proj-2', risk: 'Piping phase delayed mobilization', probability: 'Medium', impact: 'Critical', mitigation: 'Accelerated recruitment PCP', owner: 'Fatima Bukhari', status: 'Mitigated' },
+  { id: 'risk-5', projectId: 'proj-3', risk: 'MEP trade certification gaps', probability: 'Low', impact: 'Medium', mitigation: 'Pre-mobilization training', owner: 'Hamza Sheikh', status: 'Open' },
+  { id: 'risk-6', projectId: 'proj-3', risk: 'CC106 budget variance', probability: 'Medium', impact: 'Medium', mitigation: 'Monthly cost review with Finance', owner: 'Hassan Raza', status: 'Monitoring' },
+  { id: 'risk-7', projectId: 'proj-4', risk: 'PCP approval delays', probability: 'Medium', impact: 'High', mitigation: 'SLA escalation to BU Head', owner: 'Usman Malik', status: 'Open' },
+  { id: 'risk-8', projectId: 'proj-4', risk: 'Agency rate inflation', probability: 'Medium', impact: 'Medium', mitigation: 'In-house pool prioritization', owner: 'Ayesha Siddiqui', status: 'Open' },
+  { id: 'risk-9', projectId: 'proj-1', risk: 'Cost center CC104 over budget', probability: 'High', impact: 'High', mitigation: 'Headcount freeze on non-critical roles', owner: 'Hassan Raza', status: 'Monitoring' },
+  { id: 'risk-10', projectId: 'proj-2', risk: 'HSE compliance on night shifts', probability: 'Medium', impact: 'Critical', mitigation: 'Additional HSE officers', owner: 'Bilal Ahmed', status: 'Open' },
 ];
 
 const issues = [
-  { id: 'issue-1', projectId: 'proj-1', issue: '5 Electrician vacancies aged 45+ days', owner: 'S. Imran', status: 'In Progress', resolution: 'PCP-2026-00041 in approval', priority: 'High' },
-  { id: 'issue-2', projectId: 'proj-1', issue: 'CC104 projected 9% over budget', owner: 'Rajesh Menon', status: 'Open', resolution: '', priority: 'High' },
-  { id: 'issue-3', projectId: 'proj-2', issue: 'Welder mobilization shortfall', owner: 'Fatima Al Noor', status: 'Resolved', resolution: 'Agency contract signed', priority: 'High' },
-  { id: 'issue-4', projectId: 'proj-2', issue: 'Rigger availability in Ruwais', owner: 'Omar Farid', status: 'In Progress', resolution: 'Transfer from Logistics – South', priority: 'Critical' },
-  { id: 'issue-5', projectId: 'proj-3', issue: 'MEP rough-in behind schedule', owner: 'Omar Farid', status: 'Open', resolution: '', priority: 'Medium' },
-  { id: 'issue-6', projectId: 'proj-3', issue: 'Electrician night-shift coverage gap', owner: 'Priya Sharma', status: 'In Progress', resolution: 'Internal transfer from MEP – East', priority: 'Medium' },
-  { id: 'issue-7', projectId: 'proj-4', issue: 'PCP draft pending submission', owner: 'S. Imran', status: 'Open', resolution: '', priority: 'High' },
-  { id: 'issue-8', projectId: 'proj-1', issue: 'SAP headcount sync pending', owner: 'Khalid Hassan', status: 'Resolved', resolution: 'Manual reconciliation completed', priority: 'High' },
-  { id: 'issue-9', projectId: 'proj-2', issue: 'Finance approval SLA breach risk', owner: 'Rajesh Menon', status: 'Resolved', resolution: 'Escalation sent', priority: 'Critical' },
-  { id: 'issue-10', projectId: 'proj-5', issue: 'HSE audit findings', owner: 'Ali Khan', status: 'Resolved', resolution: 'All critical findings remediated', priority: 'High' },
+  { id: 'issue-1', projectId: 'proj-1', issue: '5 Electrician vacancies aged 45+ days', owner: 'Muhammad Imran', status: 'In Progress', resolution: 'PCP-2026-00041 in approval', priority: 'High' },
+  { id: 'issue-2', projectId: 'proj-1', issue: 'CC104 projected 9% over budget', owner: 'Hassan Raza', status: 'Open', resolution: '', priority: 'High' },
+  { id: 'issue-3', projectId: 'proj-2', issue: 'Welder mobilization shortfall', owner: 'Fatima Bukhari', status: 'Resolved', resolution: 'Agency contract signed', priority: 'High' },
+  { id: 'issue-4', projectId: 'proj-2', issue: 'Rigger availability in Ruwais', owner: 'Hamza Sheikh', status: 'In Progress', resolution: 'Transfer from Logistics – South', priority: 'Critical' },
+  { id: 'issue-5', projectId: 'proj-3', issue: 'MEP rough-in behind schedule', owner: 'Hamza Sheikh', status: 'Open', resolution: '', priority: 'Medium' },
+  { id: 'issue-6', projectId: 'proj-3', issue: 'Electrician night-shift coverage gap', owner: 'Zainab Khattak', status: 'In Progress', resolution: 'Internal transfer from MEP – East', priority: 'Medium' },
+  { id: 'issue-7', projectId: 'proj-4', issue: 'PCP draft pending submission', owner: 'Muhammad Imran', status: 'Open', resolution: '', priority: 'High' },
+  { id: 'issue-8', projectId: 'proj-1', issue: 'SAP headcount sync pending', owner: 'Usman Malik', status: 'Resolved', resolution: 'Manual reconciliation completed', priority: 'High' },
+  { id: 'issue-9', projectId: 'proj-2', issue: 'Finance approval SLA breach risk', owner: 'Hassan Raza', status: 'Resolved', resolution: 'Escalation sent', priority: 'Critical' },
+  { id: 'issue-10', projectId: 'proj-5', issue: 'HSE audit findings', owner: 'Bilal Ahmed', status: 'Resolved', resolution: 'All critical findings remediated', priority: 'High' },
 ];
 
 const leaves = [
@@ -224,27 +225,38 @@ const leaves = [
 
 const notifications = [
   { id: 'notif-1', type: 'task_assigned', title: 'New Task Assigned', message: 'You have been assigned: Site safety inspection', userId: 'emp-1', read: false, createdAt: new Date(Date.now() - 3600000).toISOString() },
-  { id: 'notif-2', type: 'budget', title: 'Budget Warning', message: 'Project A CC104 is projected 9% over budget by Sep', userId: 'all', read: false, createdAt: new Date(Date.now() - 7200000).toISOString() },
-  { id: 'notif-3', type: 'resource', title: 'Resource Overallocation', message: 'Fatima Al Noor is at 95% utilization', userId: 'all', read: false, createdAt: new Date(Date.now() - 10800000).toISOString() },
+  { id: 'notif-2', type: 'budget', title: 'Budget Warning', message: 'ADNOC Refinery Electrical Turnaround CC104 is projected 9% over budget by Sep', userId: 'all', read: false, createdAt: new Date(Date.now() - 7200000).toISOString() },
+  { id: 'notif-3', type: 'resource', title: 'Resource Overallocation', message: 'Fatima Bukhari is at 95% utilization', userId: 'all', read: false, createdAt: new Date(Date.now() - 10800000).toISOString() },
   { id: 'notif-4', type: 'task_overdue', title: 'Task Overdue', message: 'Welding procedure qualification is past due date', userId: 'emp-9', read: true, createdAt: new Date(Date.now() - 86400000).toISOString() },
   { id: 'notif-5', type: 'leave', title: 'Leave Approved', message: 'Your sick leave request has been approved', userId: 'emp-10', read: true, createdAt: new Date(Date.now() - 172800000).toISOString() },
 ];
 
 const auditlogs = [
-  { id: 'audit-1', action: 'BUDGET_CHANGE', entity: 'Project', entityId: 'proj-1', details: 'Project A personnel budget revised after PCP Rev. 1', userId: 'emp-3', timestamp: new Date(Date.now() - 86400000).toISOString() },
+  { id: 'audit-1', action: 'BUDGET_CHANGE', entity: 'Project', entityId: 'proj-1', details: 'ADNOC Refinery Electrical Turnaround personnel budget revised after PCP Rev. 1', userId: 'emp-3', timestamp: new Date(Date.now() - 86400000).toISOString() },
   { id: 'audit-2', action: 'CREATE', entity: 'Task', entityId: 'task-1', details: 'Task created: Site safety inspection', userId: 'emp-1', timestamp: new Date(Date.now() - 172800000).toISOString() },
-  { id: 'audit-3', action: 'UPDATE', entity: 'Project', entityId: 'proj-2', details: 'Project B piping phase status updated', userId: 'emp-2', timestamp: new Date(Date.now() - 259200000).toISOString() },
+  { id: 'audit-3', action: 'UPDATE', entity: 'Project', entityId: 'proj-2', details: 'Ruwais Piping & Welding Package piping phase status updated', userId: 'emp-2', timestamp: new Date(Date.now() - 259200000).toISOString() },
   { id: 'audit-4', action: 'KANBAN_MOVE', entity: 'Task', entityId: 'task-5', details: 'Task moved from To Do to In Progress', userId: 'emp-6', timestamp: new Date(Date.now() - 43200000).toISOString() },
-  { id: 'audit-5', action: 'CREATE', entity: 'PCP', entityId: 'pcp-1', details: 'PCP-2026-00041 submitted by S. Imran', userId: 'emp-1', timestamp: new Date(Date.now() - 604800000).toISOString() },
+  { id: 'audit-5', action: 'CREATE', entity: 'PCP', entityId: 'pcp-1', details: 'PCP-2026-00041 submitted by Muhammad Imran', userId: 'emp-1', timestamp: new Date(Date.now() - 604800000).toISOString() },
 ];
+
+async function prepareEmployeesWithPasswords() {
+  return Promise.all(
+    employees.map(async (emp) => ({
+      ...emp,
+      passwordHash: await hashPassword(defaultPasswordForRole(emp.systemRole || 'Manager')),
+    })),
+  );
+}
 
 async function seed() {
   await connectDB();
 
+  const employeesWithAuth = await prepareEmployeesWithPasswords();
+
   const collections = {
     departments: { repo: repos.departments, data: departments },
     skills: { repo: repos.skills, data: skillsList },
-    employees: { repo: repos.employees, data: employees },
+    employees: { repo: repos.employees, data: employeesWithAuth },
     projects: { repo: repos.projects, data: projects },
     tasks: { repo: repos.tasks, data: tasks },
     timesheets: { repo: repos.timesheets, data: timesheets },
@@ -273,6 +285,10 @@ async function seed() {
 
   await disconnectDB();
   console.log('\n✅ MongoDB seeded successfully!');
+  console.log('\nDemo login (email / password):');
+  console.log('  Admin   → admin@descon.com / Admin@123');
+  console.log('  HR      → hr@descon.com / Hr@123');
+  console.log('  Manager → manager@descon.com / Manager@123');
 }
 
 seed().catch((err) => {

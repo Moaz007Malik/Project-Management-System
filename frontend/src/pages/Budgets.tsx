@@ -46,7 +46,7 @@ export function Budgets() {
           const project = projects.find((pr) => pr.id === p.projectId)
           const barColor = p.health === 'red' ? 'danger' : p.health === 'yellow' ? 'warning' : 'success'
           return (
-            <Card key={p.projectId} className="transition-all hover:shadow-md">
+            <Card key={p.projectId}>
               <CardContent className="p-5 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>

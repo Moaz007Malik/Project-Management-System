@@ -37,7 +37,7 @@ export function PcpList({ mode = 'mine' }: PcpListProps) {
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">{mode === 'all' ? 'All PCPs' : 'My Requests'}</h1>
+          <h1 className="text-2xl font-bold">{mode === 'all' ? 'PCPs (Personnel Cost Planning)' : 'My Requests'}</h1>
           <p className="text-muted-foreground">Filterable list with export</p>
         </div>
         <div className="flex gap-2">

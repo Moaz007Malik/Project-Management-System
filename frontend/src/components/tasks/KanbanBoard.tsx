@@ -21,7 +21,7 @@ function TaskCard({ task, isDragging, selected }: { task: Task; isDragging?: boo
   const assignee = employees.find((e) => e.id === task.assigneeId)
 
   return (
-    <Card className={cn('cursor-grab transition-shadow hover:shadow-md', isDragging && 'shadow-lg ring-2 ring-primary/30', selected && 'ring-2 ring-primary')}>
+    <Card className={cn('cursor-grab', isDragging && 'shadow-lg ring-2 ring-primary/30', selected && 'ring-2 ring-primary')}>
       <CardContent className="p-3 space-y-2">
         <div className="flex items-start gap-2">
           <GripVertical className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />

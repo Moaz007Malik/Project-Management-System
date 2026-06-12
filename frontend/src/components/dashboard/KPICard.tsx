@@ -13,7 +13,7 @@ interface KPICardProps {
 
 export function KPICard({ title, value, icon: Icon, trend, subtitle, className }: KPICardProps) {
   return (
-    <Card className={cn('group overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-lg', className)}>
+    <Card className={cn('group overflow-hidden', className)}>
       <CardContent className="p-5">
         <div className="flex items-start justify-between">
           <div className="space-y-2">
@@ -27,7 +27,7 @@ export function KPICard({ title, value, icon: Icon, trend, subtitle, className }
               </div>
             )}
           </div>
-          <div className="rounded-xl bg-primary/10 p-3 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+          <div className="rounded-xl bg-primary/10 p-3 text-primary transition-colors group-hover:bg-gray-200 group-hover:text-gray-700 dark:group-hover:bg-gray-700 dark:group-hover:text-gray-100">
             <Icon className="h-5 w-5" />
           </div>
         </div>

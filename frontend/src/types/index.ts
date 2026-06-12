@@ -1,3 +1,5 @@
+export type SystemRole = 'Admin' | 'HR' | 'Manager'
+
 export type PcpRole = 'Requester' | 'Approver' | 'Admin' | 'Executive'
 
 export interface DocumentRecord {
@@ -26,7 +28,9 @@ export interface Employee {
   status: 'Available' | 'Allocated' | 'Fully Allocated' | 'On Leave'
   utilization?: number
   allocatedHours?: number
-  /** PCP module role — same person as HR / project resources */
+  /** App access: Admin · HR · Manager */
+  systemRole?: SystemRole
+  /** PCP workflow role (Manager / Admin with PCP duties) */
   pcpRole?: PcpRole | null
   businessUnit?: string
   active?: boolean

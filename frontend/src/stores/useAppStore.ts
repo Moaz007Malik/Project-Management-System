@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Employee, PcpRole } from '@/types'
+import type { Employee, PcpRole, SystemRole } from '@/types'
 import { syncPcpFromEmployee } from '@/lib/userContext'
 
 interface NotificationPrefs {
@@ -15,6 +15,7 @@ interface AppState {
   darkMode: boolean
   sidebarOpen: boolean
   currentUserId: string
+  systemRole: SystemRole
   pcpRole: PcpRole | null
   businessUnit: string
   notificationPrefs: NotificationPrefs
@@ -40,6 +41,7 @@ export const useAppStore = create<AppState>()(
       darkMode: false,
       sidebarOpen: true,
       currentUserId: 'emp-1',
+      systemRole: 'Manager',
       pcpRole: 'Requester',
       businessUnit: 'Construction – North',
       notificationPrefs: defaultPrefs,
@@ -47,12 +49,12 @@ export const useAppStore = create<AppState>()(
       setSidebarOpen: (open) => set({ sidebarOpen: open }),
       setCurrentUserId: (id) => set({ currentUserId: id }),
       setCurrentUser: (employee) => {
-        const { pcpRole, businessUnit } = syncPcpFromEmployee(employee)
-        set({ currentUserId: employee.id, pcpRole, businessUnit })
+        const { systemRole, pcpRole, businessUnit } = syncPcpFromEmployee(employee)
+        set({ currentUserId: employee.id, systemRole, pcpRole, businessUnit })
       },
       syncFromEmployee: (employee) => {
-        const { pcpRole, businessUnit } = syncPcpFromEmployee(employee)
-        set({ pcpRole, businessUnit })
+        const { systemRole, pcpRole, businessUnit } = syncPcpFromEmployee(employee)
+        set({ systemRole, pcpRole, businessUnit })
       },
       toggleNotificationPref: (key) =>
         set((s) => ({ notificationPrefs: { ...s.notificationPrefs, [key]: !s.notificationPrefs[key] } })),

@@ -1,3 +1,6 @@
+import { getAuthToken } from '@/lib/auth'
+import { clearAuthSession } from '@/stores/useAuthStore'
+
 function resolveApiBase(): string {
   const raw = import.meta.env.VITE_API_URL?.trim()
   if (!raw) return '/api'
@@ -15,13 +18,27 @@ function resolveApiBase(): string {
 
 const API_BASE = resolveApiBase()
 
-async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${endpoint}`, {
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    ...options,
-  })
+interface RequestOptions extends RequestInit {
+  skipAuth?: boolean
+}
+
+async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+  const { skipAuth, headers: customHeaders, ...rest } = options
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(customHeaders as Record<string, string>),
+  }
+  if (!skipAuth) {
+    const token = getAuthToken()
+    if (token) headers.Authorization = `Bearer ${token}`
+  }
+
+  const res = await fetch(`${API_BASE}${endpoint}`, { ...rest, headers })
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
+    if (res.status === 401 && !skipAuth) {
+      clearAuthSession()
+    }
     throw new Error(body.error || `API error: ${res.statusText}`)
   }
   if (res.status === 204) return undefined as T
@@ -29,9 +46,13 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  get: <T>(endpoint: string) => request<T>(endpoint),
-  post: <T>(endpoint: string, data: unknown) => request<T>(endpoint, { method: 'POST', body: JSON.stringify(data) }),
-  put: <T>(endpoint: string, data: unknown) => request<T>(endpoint, { method: 'PUT', body: JSON.stringify(data) }),
-  patch: <T>(endpoint: string, data?: unknown) => request<T>(endpoint, { method: 'PATCH', body: data ? JSON.stringify(data) : undefined }),
-  delete: <T>(endpoint: string) => request<T>(endpoint, { method: 'DELETE' }),
+  get: <T>(endpoint: string, options?: RequestOptions) => request<T>(endpoint, options),
+  post: <T>(endpoint: string, data: unknown, options?: RequestOptions) =>
+    request<T>(endpoint, { method: 'POST', body: JSON.stringify(data), ...options }),
+  put: <T>(endpoint: string, data: unknown, options?: RequestOptions) =>
+    request<T>(endpoint, { method: 'PUT', body: JSON.stringify(data), ...options }),
+  patch: <T>(endpoint: string, data?: unknown, options?: RequestOptions) =>
+    request<T>(endpoint, { method: 'PATCH', body: data ? JSON.stringify(data) : undefined, ...options }),
+  delete: <T>(endpoint: string, options?: RequestOptions) =>
+    request<T>(endpoint, { method: 'DELETE', ...options }),
 }

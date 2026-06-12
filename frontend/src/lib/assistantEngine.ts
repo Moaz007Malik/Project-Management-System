@@ -1,5 +1,5 @@
 import { api } from '@/lib/api'
-import { processChatMessage, type ChatContext } from '@/lib/chatbotEngine'
+import { CHATBOT_NAME, processChatMessage, type ChatContext } from '@/lib/chatbotEngine'
 
 export interface AssistantReply {
   text: string
@@ -19,9 +19,9 @@ export function isPcpContext(pathname: string, message?: string): boolean {
 
 export function getAssistantWelcome(pathname: string): string {
   if (pathname.startsWith('/pcp')) {
-    return 'Hi! I\'m **Descon Chatbot**. Ask about PCPs, positions, budgets, approvals, and forecasts.'
+    return `Hi! I'm **${CHATBOT_NAME}**. Ask about PCPs, positions, budgets, approvals, and forecasts.`
   }
-  return 'Hi! I\'m **Descon Chatbot**. Ask about projects, PCPs, budgets, or team skills.'
+  return `Hi! I'm **${CHATBOT_NAME}**. Ask about projects, PCPs, budgets, or team skills.`
 }
 
 export function getAssistantSuggestions(pathname: string): string[] {
@@ -29,7 +29,7 @@ export function getAssistantSuggestions(pathname: string): string[] {
     return [
       'Which cost centers are over budget this quarter?',
       'Compare Rev. 0 and Rev. 1 of PCP-2026-00041',
-      'Show all vacant electrician positions on Project A',
+      'Show all vacant electrician positions on ADNOC Refinery Electrical Turnaround',
       'Summarize PCP activity this month',
     ]
   }

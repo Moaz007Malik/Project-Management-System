@@ -13,6 +13,7 @@ import { EntityDocumentsCard } from '@/components/documents/EntityDocumentsCard'
 import { ProjectPcpsCard } from '@/components/pcp/ProjectPcpsCard'
 import { api } from '@/lib/api'
 import { useAppStore } from '@/stores/useAppStore'
+import { canCreatePcp } from '@/lib/roles'
 import { useEmployeeStore } from '@/stores/useEmployeeStore'
 import { useProjectStore } from '@/stores/useProjectStore'
 import { useTaskStore } from '@/stores/useTaskStore'
@@ -34,9 +35,9 @@ interface ProjectDetails {
 export function ProjectDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { pcpRole } = useAppStore()
+  const { systemRole, pcpRole } = useAppStore()
   const { employees, fetchEmployees } = useEmployeeStore()
-  const canCreatePcp = pcpRole === 'Requester' || pcpRole === 'Admin'
+  const showCreatePcp = canCreatePcp(systemRole, pcpRole)
   const { projects, fetchProjects, deleteProject } = useProjectStore()
   const { fetchTasks } = useTaskStore()
   const [data, setData] = useState<ProjectDetails | null>(null)
@@ -83,7 +84,7 @@ export function ProjectDetail() {
           <p className="text-muted-foreground">{project.client} · PM: {project.projectManager} · {progress}% complete</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {canCreatePcp && (
+          {showCreatePcp && (
             <Link to={`/pcp/new?projectId=${project.id}`}>
               <Button className="bg-[#E31E24] hover:bg-[#c9191f]"><FilePlus className="h-4 w-4" /> Create PCP</Button>
             </Link>
@@ -154,7 +155,7 @@ export function ProjectDetail() {
 
           <EntityDocumentsCard entityType="project" entityId={project.id} />
 
-          <ProjectPcpsCard projectId={project.id} projectName={project.name} pcps={pcps} canCreate={canCreatePcp} />
+          <ProjectPcpsCard projectId={project.id} projectName={project.name} pcps={pcps} canCreate={showCreatePcp} />
         </div>
       </div>
 

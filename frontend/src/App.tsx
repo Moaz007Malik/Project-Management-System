@@ -1,5 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppLayout } from '@/components/layout/AppLayout'
+import { AuthGate } from '@/components/layout/AuthGate'
+import { FallbackRoute } from '@/components/layout/FallbackRoute'
+import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
+import { RoleGuard } from '@/components/layout/RoleGuard'
+import { Login } from '@/pages/Login'
 import { Dashboard } from '@/pages/Dashboard'
 import { Projects } from '@/pages/Projects'
 import { ProjectDetail } from '@/pages/ProjectDetail'
@@ -19,36 +24,43 @@ import { PcpApprovalQueue } from '@/pages/pcp/PcpApprovalQueue'
 import { PcpRevisions } from '@/pages/pcp/PcpRevisions'
 import { PcpExecutiveDashboard } from '@/pages/pcp/PcpExecutiveDashboard'
 import { PcpAiInsights } from '@/pages/pcp/PcpAiInsights'
-import { PcpAdmin } from '@/pages/pcp/PcpAdmin'
+
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<AppLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="projects" element={<Projects />} />
-          <Route path="projects/:id" element={<ProjectDetail />} />
-          <Route path="tasks" element={<Tasks />} />
-          <Route path="resources" element={<Resources />} />
-          <Route path="hr" element={<HR />} />
-          <Route path="hr/:id" element={<EmployeeProfile />} />
-          <Route path="timesheets" element={<Timesheets />} />
-          <Route path="budgets" element={<Budgets />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="pcp/dashboard" element={<PcpDashboard />} />
-          <Route path="pcp/new" element={<PcpNewRequest />} />
-          <Route path="pcp/requests" element={<PcpList mode="mine" />} />
-          <Route path="pcp/requests/:id" element={<PcpDetail />} />
-          <Route path="pcp/all" element={<PcpList mode="all" />} />
-          <Route path="pcp/approval" element={<PcpApprovalQueue />} />
-          <Route path="pcp/revisions" element={<PcpRevisions />} />
-          <Route path="pcp/executive" element={<PcpExecutiveDashboard />} />
-          <Route path="pcp/insights" element={<PcpAiInsights />} />
-          <Route path="pcp/admin" element={<PcpAdmin />} />
-          <Route path="pcp/assistant" element={<Navigate to="/" replace />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <AuthGate>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route element={<ProtectedRoute />}>
+          <Route element={<AppLayout />}>
+            <Route element={<RoleGuard />}>
+              <Route index element={<Dashboard />} />
+              <Route path="projects" element={<Projects />} />
+              <Route path="projects/:id" element={<ProjectDetail />} />
+              <Route path="tasks" element={<Tasks />} />
+              <Route path="resources" element={<Resources />} />
+              <Route path="hr" element={<HR />} />
+              <Route path="hr/:id" element={<EmployeeProfile />} />
+              <Route path="timesheets" element={<Timesheets />} />
+              <Route path="budgets" element={<Budgets />} />
+              <Route path="reports" element={<Reports />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="pcp/dashboard" element={<PcpDashboard />} />
+              <Route path="pcp/new" element={<PcpNewRequest />} />
+              <Route path="pcp/requests" element={<PcpList mode="mine" />} />
+              <Route path="pcp/requests/:id" element={<PcpDetail />} />
+              <Route path="pcp/all" element={<PcpList mode="all" />} />
+              <Route path="pcp/approval" element={<PcpApprovalQueue />} />
+              <Route path="pcp/revisions" element={<PcpRevisions />} />
+              <Route path="pcp/executive" element={<PcpExecutiveDashboard />} />
+              <Route path="pcp/insights" element={<PcpAiInsights />} />
+              <Route path="pcp/assistant" element={<Navigate to="/" replace />} />
+            </Route>
+          </Route>
+          </Route>
+          <Route path="*" element={<FallbackRoute />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthGate>
   )
 }
