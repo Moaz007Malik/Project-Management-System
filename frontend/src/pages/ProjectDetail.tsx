@@ -86,7 +86,7 @@ export function ProjectDetail() {
         <div className="flex flex-wrap gap-2">
           {showCreatePcp && (
             <Link to={`/pcp/new?projectId=${project.id}`}>
-              <Button className="bg-[#E31E24] hover:bg-[#c9191f]"><FilePlus className="h-4 w-4" /> Create PCP</Button>
+              <Button className="bg-primary hover:bg-primary/90"><FilePlus className="h-4 w-4" /> Create PCP</Button>
             </Link>
           )}
           <Button variant="outline" onClick={() => setEditOpen(true)}><Pencil className="h-4 w-4" /> Edit</Button>

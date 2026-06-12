@@ -62,7 +62,7 @@ export function AssistantPanel({ className }: AssistantPanelProps) {
               <div
                 className={cn(
                   'flex h-7 w-7 shrink-0 items-center justify-center rounded-full',
-                  msg.role === 'user' ? 'bg-muted' : 'bg-[#E31E24]/10 text-[#E31E24]'
+                  msg.role === 'user' ? 'bg-muted' : 'bg-primary/10 text-primary'
                 )}
               >
                 {msg.role === 'user' ? <User className="h-3.5 w-3.5" /> : <Bot className="h-3.5 w-3.5" />}
@@ -71,7 +71,7 @@ export function AssistantPanel({ className }: AssistantPanelProps) {
                 className={cn(
                   'max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed',
                   msg.role === 'user'
-                    ? 'bg-[#E31E24] text-white'
+                    ? 'bg-primary text-white'
                     : 'bg-muted/60 text-foreground'
                 )}
               >
@@ -101,7 +101,7 @@ export function AssistantPanel({ className }: AssistantPanelProps) {
                 {msg.actions && msg.actions.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {msg.actions.map((a) => (
-                      <Button key={a} size="sm" variant="outline" className="h-7 border-[#2A6EBB] text-xs text-[#2A6EBB]">
+                      <Button key={a} size="sm" variant="outline" className="h-7 border-accent text-xs text-accent">
                         {a}
                       </Button>
                     ))}
@@ -152,7 +152,7 @@ export function AssistantPanel({ className }: AssistantPanelProps) {
             />
             <Button
               type="submit"
-              className="bg-[#E31E24] hover:bg-[#c9191f]"
+              className="bg-primary hover:bg-primary/90"
               size="icon"
               disabled={loading || !input.trim()}
             >

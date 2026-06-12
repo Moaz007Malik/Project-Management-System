@@ -5,6 +5,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { DashboardMetrics } from '@/types'
 import { formatCurrency, formatCurrencyCompact } from '@/lib/utils'
+import { useThemeColors } from '@/lib/useThemeColors'
 
 const COLORS = ['#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#6366f1']
 const STATUS_COLORS: Record<string, string> = {
@@ -24,6 +25,8 @@ interface DashboardChartsProps {
 }
 
 export function DashboardCharts({ metrics }: DashboardChartsProps) {
+  const { accentFill, primaryFill } = useThemeColors()
+
   return (
     <>
       <Card className="animate-fade-in">
@@ -57,8 +60,8 @@ export function DashboardCharts({ metrics }: DashboardChartsProps) {
               <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => formatCurrencyCompact(Number(v))} />
               <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => [formatCurrency(Number(v)), '']} />
               <Legend />
-              <Bar dataKey="budget" fill="#8b5cf6" radius={[4, 4, 0, 0]} name="Budget" />
-              <Bar dataKey="actual" fill="#06b6d4" radius={[4, 4, 0, 0]} name="Actual" />
+              <Bar dataKey="budget" fill={accentFill} radius={[4, 4, 0, 0]} name="Budget" />
+              <Bar dataKey="actual" fill={primaryFill} radius={[4, 4, 0, 0]} name="Actual" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -88,17 +91,11 @@ export function DashboardCharts({ metrics }: DashboardChartsProps) {
         <CardContent>
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={metrics.monthlySpending}>
-              <defs>
-                <linearGradient id="colorCost" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
-                </linearGradient>
-              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
               <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => formatCurrencyCompact(Number(v))} />
               <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => [formatCurrency(Number(v)), 'Cost']} />
-              <Area type="monotone" dataKey="cost" stroke="#8b5cf6" fill="url(#colorCost)" strokeWidth={2} />
+              <Area type="monotone" dataKey="cost" stroke={accentFill} fill={accentFill} fillOpacity={0.2} strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </CardContent>
@@ -115,8 +112,8 @@ export function DashboardCharts({ metrics }: DashboardChartsProps) {
               <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => [formatCurrency(Number(v)), '']} />
               <Legend />
               <Bar dataKey="revenue" fill="#10b981" radius={[4, 4, 0, 0]} name="Revenue" />
-              <Bar dataKey="actualCost" fill="#ef4444" radius={[4, 4, 0, 0]} name="Cost" />
-              <Bar dataKey="profit" fill="#8b5cf6" radius={[4, 4, 0, 0]} name="Profit" />
+              <Bar dataKey="actualCost" fill={primaryFill} radius={[4, 4, 0, 0]} name="Cost" />
+              <Bar dataKey="profit" fill={accentFill} radius={[4, 4, 0, 0]} name="Profit" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -132,8 +129,8 @@ export function DashboardCharts({ metrics }: DashboardChartsProps) {
               <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
               <Tooltip contentStyle={chartTooltipStyle} />
               <Legend />
-              <Bar dataKey="allocated" stackId="a" fill="#8b5cf6" name="Allocated" radius={[0, 0, 0, 0]} />
-              <Bar dataKey="available" stackId="a" fill="#e5e7eb" name="Available" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="allocated" stackId="a" fill={accentFill} name="Allocated" radius={[0, 0, 0, 0]} />
+              <Bar dataKey="available" stackId="a" fill="hsl(var(--muted))" name="Available" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

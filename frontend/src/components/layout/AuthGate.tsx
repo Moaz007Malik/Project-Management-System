@@ -30,7 +30,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   if (!ready) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-[#E31E24]" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
   }

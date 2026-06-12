@@ -56,14 +56,14 @@ export function PcpApprovalQueue() {
               key={r.id}
               type="button"
               onClick={() => open(r.id)}
-              className={`w-full rounded-lg border p-4 text-left transition-colors ${selected?.id === r.id ? 'border-[#E31E24] bg-[#E31E24]/5' : 'border-border hover:bg-muted/50'}`}
+              className={`w-full rounded-lg border p-4 text-left transition-colors ${selected?.id === r.id ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'}`}
             >
               <div className="flex justify-between gap-2">
-                <span className="font-medium text-[#2A6EBB]">{r.pcpNo}</span>
+                <span className="font-medium text-accent">{r.pcpNo}</span>
                 <PcpStatusChip status={r.status} />
               </div>
               <p className="text-sm text-muted-foreground">{r.client} · {formatAed(r.monthlyTotal || 0)}/mo</p>
-              <p className={`mt-1 text-xs ${(r.slaHoursRemaining || 0) < 12 ? 'font-semibold text-[#E31E24]' : 'text-muted-foreground'}`}>
+              <p className={`mt-1 text-xs ${(r.slaHoursRemaining || 0) < 12 ? 'font-semibold text-primary' : 'text-muted-foreground'}`}>
                 With {r.currentStage} · SLA: {r.slaHoursRemaining || 0}h remaining
               </p>
             </button>
@@ -104,7 +104,7 @@ export function PcpApprovalQueue() {
                 <Textarea placeholder="Comment (required for Return / Reject)" value={comment} onChange={(e) => setComment(e.target.value)} className="mb-3" />
                 <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                   <Button className="bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto" onClick={() => act('approve')}><Check className="h-4 w-4" /> Approve</Button>
-                  <Button variant="outline" className="w-full border-[#2A6EBB] text-[#2A6EBB] sm:w-auto" onClick={() => act('return')}><RotateCcw className="h-4 w-4" /> Return for Revision</Button>
+                  <Button variant="outline" className="w-full border-accent text-accent sm:w-auto" onClick={() => act('return')}><RotateCcw className="h-4 w-4" /> Return for Revision</Button>
                   <Button variant="destructive" className="w-full sm:w-auto" onClick={() => act('reject')}><X className="h-4 w-4" /> Reject</Button>
                 </div>
               </div>
@@ -119,7 +119,7 @@ export function PcpApprovalQueue() {
                 ))}
               </div>
 
-              <Link to={`/pcp/requests/${selected.id}`} className="text-sm text-[#2A6EBB] hover:underline">Open full detail →</Link>
+              <Link to={`/pcp/requests/${selected.id}`} className="text-sm text-accent hover:underline">Open full detail →</Link>
             </CardContent>
           </Card>
         )}

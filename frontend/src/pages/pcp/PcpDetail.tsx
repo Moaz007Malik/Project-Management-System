@@ -124,7 +124,7 @@ export function PcpDetail() {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Positions</CardTitle>
           {pcpRole === 'Requester' && (pcp.status === 'Approved' || pcp.status === 'Returned') && (
-            <Button size="sm" variant="outline" className="border-[#2A6EBB] text-[#2A6EBB]" onClick={() => setShowRevise(true)}>
+            <Button size="sm" variant="outline" className="border-accent text-accent" onClick={() => setShowRevise(true)}>
               Create Revision (shift change)
             </Button>
           )}
@@ -153,7 +153,7 @@ export function PcpDetail() {
         <CardContent className="space-y-3">
           {pcp.approvalTrail.map((t, i) => (
             <div key={i} className="flex gap-3 text-sm">
-              <div className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#2A6EBB]" />
+              <div className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent" />
               <div>
                 <p className="font-medium">{t.step} — {t.by}</p>
                 {t.at && <p className="text-muted-foreground">{new Date(t.at).toLocaleString()}{t.tatHours != null && ` (TAT ${t.tatHours}h)`}</p>}
@@ -164,7 +164,7 @@ export function PcpDetail() {
         </CardContent>
       </Card>
 
-      <Link to={`/pcp/revisions?pcpId=${pcp.id}`} className="text-sm font-medium text-[#2A6EBB] hover:underline">
+      <Link to={`/pcp/revisions?pcpId=${pcp.id}`} className="text-sm font-medium text-accent hover:underline">
         View revision history & compare →
       </Link>
 
@@ -181,12 +181,12 @@ export function PcpDetail() {
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium">Justification <span className="text-[#E31E24]">*</span></label>
+                <label className="text-sm font-medium">Justification <span className="text-primary">*</span></label>
                 <Textarea value={justification} onChange={(e) => setJustification(e.target.value)} className="mt-1" />
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setShowRevise(false)}>Cancel</Button>
-                <Button className="bg-[#E31E24] hover:bg-[#c9191f]" onClick={createShiftRevision} disabled={revising || !justification.trim()}>
+                <Button className="bg-primary hover:bg-primary/90" onClick={createShiftRevision} disabled={revising || !justification.trim()}>
                   Submit Revision
                 </Button>
               </div>

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Moon, Sun, Bell, Shield, LogOut } from 'lucide-react'
+import { Moon, Sun, Bell, Shield, LogOut, Palette, Check } from 'lucide-react'
+import { COLOR_THEMES, type ColorThemeId } from '@/lib/themes'
+import { cn } from '@/lib/utils'
 import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -21,7 +23,7 @@ const NOTIF_LABELS: Record<string, string> = {
 export function Settings() {
   const navigate = useNavigate()
   const {
-    darkMode, toggleDarkMode, notificationPrefs, toggleNotificationPref,
+    darkMode, colorTheme, setDarkMode, setColorTheme, notificationPrefs, toggleNotificationPref,
     systemRole, pcpRole, businessUnit,
   } = useAppStore()
   const { user, logout } = useAuthStore()
@@ -62,7 +64,7 @@ export function Settings() {
                 {pcpRole ? (
                   <p>
                     <span className="text-muted-foreground">PCP workflow:</span>{' '}
-                    <span className="font-medium text-[#E31E24]">{pcpRole}</span>
+                    <span className="font-medium text-primary">{pcpRole}</span>
                     {' · '}{businessUnit}
                   </p>
                 ) : (
@@ -76,19 +78,75 @@ export function Settings() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              {darkMode ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-              Appearance
+              <Palette className="h-5 w-5" />
+              Theme Customization
             </CardTitle>
+            <CardDescription>Choose a color theme and light or dark mode</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between">
-              <p className="font-medium">Dark Mode</p>
-              <Button variant={darkMode ? 'default' : 'outline'} onClick={toggleDarkMode}>
-                {darkMode ? 'Dark' : 'Light'}
-              </Button>
+          <CardContent className="space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-muted/30 p-3">
+              <div className="flex items-center gap-2">
+                {darkMode ? <Moon className="h-4 w-4 text-muted-foreground" /> : <Sun className="h-4 w-4 text-muted-foreground" />}
+                <span className="text-sm font-medium">Color mode</span>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant={!darkMode ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setDarkMode(false)}
+                >
+                  <Sun className="h-4 w-4" /> Light
+                </Button>
+                <Button
+                  variant={darkMode ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setDarkMode(true)}
+                >
+                  <Moon className="h-4 w-4" /> Dark
+                </Button>
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-3 text-sm font-medium">Color theme</p>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+                {COLOR_THEMES.map((theme) => {
+                  const selected = colorTheme === theme.id
+                  return (
+                    <button
+                      key={theme.id}
+                      type="button"
+                      onClick={() => setColorTheme(theme.id as ColorThemeId)}
+                      className={cn(
+                        'relative rounded-xl border p-3 text-left transition-all',
+                        selected
+                          ? 'border-primary bg-primary/5 ring-2 ring-primary/30'
+                          : 'border-border hover:border-primary/40',
+                      )}
+                    >
+                      {selected && (
+                        <span className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                          <Check className="h-3 w-3" />
+                        </span>
+                      )}
+                      <div className="mb-2 flex gap-1">
+                        {theme.swatch.map((color) => (
+                          <span
+                            key={color}
+                            className="h-6 w-6 rounded-full border border-black/10 shadow-sm"
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-sm font-semibold">{theme.name}</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">{theme.description}</p>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           </CardContent>
         </Card>

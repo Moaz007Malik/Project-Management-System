@@ -20,7 +20,7 @@ export function Login() {
   if (!ready) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#E31E24]" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
   }
@@ -86,7 +86,7 @@ export function Login() {
               {error && <p className="text-sm text-destructive">{error}</p>}
               <Button
                 type="submit"
-                className="w-full bg-[#E31E24] hover:bg-[#c9191f]"
+                className="w-full bg-primary hover:bg-primary/90"
                 disabled={loading}
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}

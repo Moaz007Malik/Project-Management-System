@@ -17,10 +17,6 @@ export function AppLayout() {
   const { fetchEmployees } = useEmployeeStore()
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', darkMode)
-  }, [darkMode])
-
-  useEffect(() => {
     fetchNotifications()
     fetchEmployees()
   }, [fetchNotifications, fetchEmployees])

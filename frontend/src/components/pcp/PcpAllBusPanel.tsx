@@ -85,13 +85,13 @@ export function PcpAllBusPanel({ requests, businessUnits }: PcpAllBusPanelProps)
             <Link
               key={r.id}
               to="/pcp/approval"
-              className="flex items-center justify-between rounded-lg border border-[#E31E24]/20 bg-[#E31E24]/5 p-3 transition-colors hover:bg-[#E31E24]/10"
+              className="flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 p-3 transition-colors hover:bg-primary/10"
             >
               <div>
-                <p className="font-medium text-[#2A6EBB]">{r.pcpNo}</p>
+                <p className="font-medium text-accent">{r.pcpNo}</p>
                 <p className="text-xs text-muted-foreground">{r.businessUnit} · {r.currentStage}</p>
               </div>
-              <span className="text-sm font-semibold text-[#E31E24]">{r.slaHoursRemaining}h left</span>
+              <span className="text-sm font-semibold text-primary">{r.slaHoursRemaining}h left</span>
             </Link>
           )) : (
             <p className="text-sm text-muted-foreground">No PCP approvals at SLA risk.</p>
@@ -112,7 +112,7 @@ export function PcpAllBusPanel({ requests, businessUnits }: PcpAllBusPanelProps)
                   <span className="text-muted-foreground shrink-0">{formatAed(bu.monthly)}</span>
                 </div>
                 <div className="h-2 rounded-full bg-muted overflow-hidden">
-                  <div className="h-full rounded-full bg-[#2A6EBB]" style={{ width: `${pct}%` }} />
+                  <div className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
                 </div>
               </div>
             )
@@ -126,12 +126,12 @@ export function PcpAllBusPanel({ requests, businessUnits }: PcpAllBusPanelProps)
           {requests.slice(0, 6).map((r) => (
             <Link key={r.id} to={`/pcp/requests/${r.id}`} className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50">
               <div>
-                <p className="font-medium text-[#2A6EBB]">{r.pcpNo}</p>
+                <p className="font-medium text-accent">{r.pcpNo}</p>
                 <p className="text-sm text-muted-foreground">{r.businessUnit} · {r.client}</p>
               </div>
               <div className="flex items-center gap-2">
                 {r.status === 'In Approval' && r.slaHoursRemaining != null && (
-                  <span className={`text-xs ${r.slaHoursRemaining < 12 ? 'text-[#E31E24] font-semibold' : 'text-muted-foreground'}`}>
+                  <span className={`text-xs ${r.slaHoursRemaining < 12 ? 'text-primary font-semibold' : 'text-muted-foreground'}`}>
                     SLA {r.slaHoursRemaining}h
                   </span>
                 )}

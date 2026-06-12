@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { useThemeColors } from '@/lib/useThemeColors'
 
 interface SlaTimerProps {
   hoursRemaining: number
@@ -7,10 +8,11 @@ interface SlaTimerProps {
 }
 
 export function SlaTimer({ hoursRemaining, totalHours = 48, className }: SlaTimerProps) {
+  const { primary, accent } = useThemeColors()
   const pct = Math.max(0, Math.min(100, (hoursRemaining / totalHours) * 100))
   const urgent = hoursRemaining <= 12
   const warning = hoursRemaining <= totalHours * 0.25 && !urgent
-  const color = urgent ? '#E31E24' : warning ? '#f59e0b' : '#2A6EBB'
+  const color = urgent ? primary : warning ? 'hsl(var(--warning))' : accent
 
   return (
     <div className={cn('flex items-center gap-3', className)}>
@@ -33,7 +35,7 @@ export function SlaTimer({ hoursRemaining, totalHours = 48, className }: SlaTime
         </span>
       </div>
       <div className="text-sm">
-        <p className="font-medium" style={{ color: urgent ? '#E31E24' : undefined }}>
+        <p className={cn('font-medium', urgent && 'text-primary')}>
           {urgent ? 'SLA overdue risk' : warning ? 'SLA reminder (75%+ consumed)' : 'SLA remaining'}
         </p>
         <p className="text-xs text-muted-foreground">{hoursRemaining}h of {totalHours}h window</p>

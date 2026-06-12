@@ -27,7 +27,7 @@ export function KPICard({ title, value, icon: Icon, trend, subtitle, className }
               </div>
             )}
           </div>
-          <div className="rounded-xl bg-primary/10 p-3 text-primary transition-colors group-hover:bg-gray-200 group-hover:text-gray-700 dark:group-hover:bg-gray-700 dark:group-hover:text-gray-100">
+          <div className="rounded-xl bg-primary/10 p-3 text-primary transition-colors group-hover:bg-muted group-hover:text-foreground">
             <Icon className="h-5 w-5" />
           </div>
         </div>

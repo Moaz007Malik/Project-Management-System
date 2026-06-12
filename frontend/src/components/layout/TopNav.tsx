@@ -54,7 +54,7 @@ export function TopNav() {
         <button
           type="button"
           onClick={handleAskCorvi}
-          className="absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center gap-1 rounded-md bg-[#E31E24]/10 px-2.5 py-1 text-[11px] font-semibold text-[#E31E24] transition-colors hover:bg-[#E31E24]/15"
+          className="absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center gap-1 rounded-md bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary transition-colors hover:bg-primary/15"
           title="Ask CORVI - The AI Assistant"
         >
           <Sparkles className="h-3.5 w-3.5" />
@@ -121,7 +121,7 @@ export function TopNav() {
             <p className="text-sm font-medium">{user?.fullName || 'User'}</p>
             <p className="text-[10px] text-muted-foreground">
               <span className="font-medium">{systemRole}</span>
-              {pcpRole ? <><span className="text-[#E31E24]"> · {pcpRole}</span></> : null}
+              {pcpRole ? <><span className="text-primary"> · {pcpRole}</span></> : null}
               {user?.designation ? ` · ${user.designation}` : ''}
             </p>
           </div>

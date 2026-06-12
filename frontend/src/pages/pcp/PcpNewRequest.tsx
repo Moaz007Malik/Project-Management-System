@@ -193,14 +193,14 @@ export function PcpNewRequest() {
           </Link>
         )}
         <h1 className="text-2xl font-bold">New PCP Request</h1>
-        <p className="text-muted-foreground">4-step wizard · mandatory fields marked with <span className="text-[#E31E24]">*</span></p>
+        <p className="text-muted-foreground">4-step wizard · mandatory fields marked with <span className="text-primary">*</span></p>
       </div>
 
       {sourceProject && (
-        <div className="flex items-start gap-3 rounded-lg border border-[#2A6EBB]/30 bg-[#2A6EBB]/5 p-4">
-          <FolderKanban className="mt-0.5 h-5 w-5 shrink-0 text-[#2A6EBB]" />
+        <div className="flex items-start gap-3 rounded-lg border border-accent/30 bg-accent/5 p-4">
+          <FolderKanban className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
           <div className="text-sm">
-            <p className="font-medium text-[#2A6EBB]">Creating PCP for {sourceProject.name}</p>
+            <p className="font-medium text-accent">Creating PCP for {sourceProject.name}</p>
             <p className="mt-1 text-muted-foreground">
               {sourceProject.client} · PM: {sourceProject.projectManager} · {sourceProject.status}
               {sourceProject.priority && ` · ${sourceProject.priority} priority`}
@@ -211,7 +211,7 @@ export function PcpNewRequest() {
 
       <div className="flex flex-col gap-2 sm:flex-row">
         {STEPS.map((label, i) => (
-          <div key={label} className={`flex-1 rounded-lg border px-3 py-2 text-center text-xs font-medium ${i === step ? 'border-[#E31E24] bg-[#E31E24]/5 text-[#E31E24]' : i < step ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-border text-muted-foreground'}`}>
+          <div key={label} className={`flex-1 rounded-lg border px-3 py-2 text-center text-xs font-medium ${i === step ? 'border-primary bg-primary/5 text-primary' : i < step ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-border text-muted-foreground'}`}>
             Step {i + 1}: {label}
           </div>
         ))}
@@ -274,7 +274,7 @@ export function PcpNewRequest() {
           <Card key={idx}>
             <CardHeader><CardTitle>{pos.title || `Position ${idx + 1}`} – Compensation & Costing</CardTitle></CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-2">
-              <div><label className="text-sm">Market Salary (benchmark)</label><Input type="number" value={pos.marketSalary || ''} onChange={(e) => updatePos(idx, { marketSalary: parseFloat(e.target.value) || 0 })} /><p className="mt-1 text-xs text-[#2A6EBB]">AI suggestion: Market range 11,500–13,000</p></div>
+              <div><label className="text-sm">Market Salary (benchmark)</label><Input type="number" value={pos.marketSalary || ''} onChange={(e) => updatePos(idx, { marketSalary: parseFloat(e.target.value) || 0 })} /><p className="mt-1 text-xs text-accent">AI suggestion: Market range 11,500–13,000</p></div>
               <div><RequiredLabel>Proposed Salary</RequiredLabel><Input type="number" value={pos.proposedSalary || ''} onChange={(e) => updatePos(idx, { proposedSalary: parseFloat(e.target.value) || 0 })} />{breach && <p className="mt-1 text-xs text-amber-600">Above grade band — mandatory justification below</p>}</div>
               {breach && <div className="md:col-span-2"><RequiredLabel>Band Breach Justification</RequiredLabel><Textarea value={pos.bandBreachJustification || ''} onChange={(e) => updatePos(idx, { bandBreachJustification: e.target.value })} /></div>}
               <div className="md:col-span-2"><label className="text-sm">Benefits</label><div className="flex flex-wrap gap-3 mt-1">{masters?.benefits.map((b) => { const ben = pos.benefits?.find((x) => x.name === b); return <label key={b} className="flex items-center gap-2 text-sm border rounded-lg px-2 py-1"><input type="checkbox" checked={!!ben} onChange={(e) => { const benefits = pos.benefits || []; updatePos(idx, { benefits: e.target.checked ? [...benefits.filter((x) => x.name !== b), { name: b, amount: defaultBenefitAmount(b) }] : benefits.filter((x) => x.name !== b) }); }} />{b}</label> })}</div></div>
@@ -297,16 +297,16 @@ export function PcpNewRequest() {
                 <p className="font-semibold">{pos.title} × {pos.count} · {pos.shift} · {pos.grade}</p>
                 <p>Proposed: {formatAed(pos.proposedSalary)}/mo · Total: {formatAed(calcPositionTotal(pos))}</p>
                 <p className="text-muted-foreground">CC: {pos.costCenters.map((c) => `${c.code} ${c.percent}%`).join(' · ')}</p>
-                <Button variant="ghost" size="sm" className="text-[#2A6EBB]" onClick={() => setStep(1)}>Edit</Button>
+                <Button variant="ghost" size="sm" className="text-accent" onClick={() => setStep(1)}>Edit</Button>
               </CardContent></Card>
             ))}
-            <div className={`rounded-lg border p-4 text-sm font-medium ${allChargingBalanced ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-800' : 'border-[#E31E24]/30 bg-[#E31E24]/5 text-[#E31E24]'}`}>
+            <div className={`rounded-lg border p-4 text-sm font-medium ${allChargingBalanced ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-800' : 'border-primary/30 bg-primary/5 text-primary'}`}>
               {positions.reduce((s, p) => s + (p.count || 1), 0)} positions · {formatAed(monthlyTotal)}/month · Charging {allChargingBalanced ? 'balanced ✓' : 'not balanced — fix before submit'}
             </div>
             <ApprovalChainPreview steps={APPROVAL_CHAIN} />
           </div>
-          <Card className="border-[#2A6EBB]/20 bg-[#2A6EBB]/5">
-            <CardHeader><CardTitle className="text-[#2A6EBB]">AI Panel</CardTitle></CardHeader>
+          <Card className="border-accent/20 bg-accent/5">
+            <CardHeader><CardTitle className="text-accent">AI Panel</CardTitle></CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               Sourcing recommendation: 2 of {positions.length} positions match in-house talent pool; Electrician (Night shift) recommended via external staffing agency — expected time-to-fill 21 days vs 38 days in-house.
             </CardContent>
@@ -325,7 +325,7 @@ export function PcpNewRequest() {
               <ApprovalChainPreview steps={APPROVAL_CHAIN} />
               <div className="flex gap-2 justify-end">
                 <Button variant="outline" onClick={() => setShowSubmitConfirm(false)}>Cancel</Button>
-                <Button className="bg-[#E31E24] hover:bg-[#c9191f]" onClick={submit} disabled={saving}>Confirm Submit</Button>
+                <Button className="bg-primary hover:bg-primary/90" onClick={submit} disabled={saving}>Confirm Submit</Button>
               </div>
             </CardContent>
           </Card>
@@ -338,10 +338,10 @@ export function PcpNewRequest() {
           {step === 3 ? (
             <>
               <Button variant="secondary" onClick={saveDraft} disabled={saving}>Save Draft</Button>
-              <Button className="bg-[#E31E24] hover:bg-[#c9191f]" onClick={() => { const errs = validateStep(); setErrors(errs); if (!errs.length) setShowSubmitConfirm(true) }} disabled={saving || !allChargingBalanced}>Submit for Approval</Button>
+              <Button className="bg-primary hover:bg-primary/90" onClick={() => { const errs = validateStep(); setErrors(errs); if (!errs.length) setShowSubmitConfirm(true) }} disabled={saving || !allChargingBalanced}>Submit for Approval</Button>
             </>
           ) : (
-            <Button className="bg-[#2A6EBB] hover:bg-[#235a9e]" onClick={goNext}>Next <ChevronRight className="h-4 w-4" /></Button>
+            <Button className="bg-accent hover:bg-accent/90" onClick={goNext}>Next <ChevronRight className="h-4 w-4" /></Button>
           )}
         </div>
       </div>

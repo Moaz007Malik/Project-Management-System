@@ -89,7 +89,7 @@ export function DashboardExportDialog({ open, onClose, metrics, pdfOptions }: Da
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button variant="outline" onClick={onClose}>Close</Button>
           <Button
-            className="bg-[#2A6EBB] hover:bg-[#235a9e]"
+            className="bg-accent hover:bg-accent/90"
             onClick={handleSendEmail}
             disabled={sending || !email.trim()}
           >
@@ -107,7 +107,7 @@ export function DashboardExportDialog({ open, onClose, metrics, pdfOptions }: Da
             <p className="mt-1 text-muted-foreground">
               KPIs, project budgets, profitability, and spending are included in the report.
             </p>
-            <Button variant="ghost" className="mt-1 h-auto p-0 text-[#2A6EBB]" onClick={handleDownloadAgain}>
+            <Button variant="ghost" className="mt-1 h-auto p-0 text-accent" onClick={handleDownloadAgain}>
               <Download className="h-3.5 w-3.5" /> Download again
             </Button>
           </div>

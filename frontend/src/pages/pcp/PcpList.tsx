@@ -81,17 +81,17 @@ export function PcpList({ mode = 'mine' }: PcpListProps) {
             <tbody>
               {requests.map((r) => (
                 <tr key={r.id} className="border-b border-border hover:bg-muted/30">
-                  <td className="px-4 py-3"><Link to={`/pcp/requests/${r.id}`} className="font-medium text-[#2A6EBB] hover:underline">{r.pcpNo}</Link></td>
+                  <td className="px-4 py-3"><Link to={`/pcp/requests/${r.id}`} className="font-medium text-accent hover:underline">{r.pcpNo}</Link></td>
                   <td className="px-4 py-3">{r.client}</td>
                   <td className="px-4 py-3">{r.positionSummary}</td>
                   <td className="px-4 py-3"><PcpStatusChip status={r.status} /></td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {r.currentStage}
                     {r.slaHoursRemaining != null && r.status === 'In Approval' && (
-                      <span className={r.slaHoursRemaining < 12 ? ' ml-1 text-[#E31E24]' : ''}> · SLA: {r.slaHoursRemaining}h</span>
+                      <span className={r.slaHoursRemaining < 12 ? ' ml-1 text-primary' : ''}> · SLA: {r.slaHoursRemaining}h</span>
                     )}
                   </td>
-                  <td className="px-4 py-3"><Link to={`/pcp/revisions?pcpId=${r.id}`} className="text-[#2A6EBB] hover:underline">Rev. {r.revision}</Link></td>
+                  <td className="px-4 py-3"><Link to={`/pcp/revisions?pcpId=${r.id}`} className="text-accent hover:underline">Rev. {r.revision}</Link></td>
                   <td className="px-4 py-3"><VarianceBadge value={r.budgetVsActual} /></td>
                 </tr>
               ))}

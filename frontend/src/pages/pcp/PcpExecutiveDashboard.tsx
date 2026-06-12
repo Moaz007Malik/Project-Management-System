@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select } from '@/components/ui/select'
 import { usePcpStore } from '@/stores/usePcpStore'
 import { formatCurrency, formatCurrencyCompact } from '@/lib/utils'
+import { useThemeColors } from '@/lib/useThemeColors'
 
 export function PcpExecutiveDashboard() {
   const { executive, fetchExecutive } = usePcpStore()
+  const { accentFill, primaryFill } = useThemeColors()
 
   useEffect(() => { fetchExecutive() }, [fetchExecutive])
 
@@ -56,8 +58,8 @@ export function PcpExecutiveDashboard() {
                 <XAxis dataKey="project" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip />
-                <Bar dataKey="filled" fill="#2A6EBB" name="Filled" />
-                <Bar dataKey="vacant" fill="#E31E24" name="Vacant" />
+                <Bar dataKey="filled" fill={accentFill} name="Filled" />
+                <Bar dataKey="vacant" fill={primaryFill} name="Vacant" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -70,8 +72,8 @@ export function PcpExecutiveDashboard() {
                 <XAxis dataKey="costCenter" fontSize={12} />
                 <YAxis tickFormatter={(v) => formatCurrencyCompact(Number(v))} fontSize={12} />
                 <Tooltip formatter={(v) => formatCurrency(Number(v))} />
-                <Bar dataKey="budget" fill="#2A6EBB" name="Budget" />
-                <Bar dataKey="actual" fill="#E31E24" name="Actual" />
+                <Bar dataKey="budget" fill={accentFill} name="Budget" />
+                <Bar dataKey="actual" fill={primaryFill} name="Actual" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -85,7 +87,7 @@ export function PcpExecutiveDashboard() {
                 <XAxis dataKey="geography" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip />
-                <Line type="monotone" dataKey="days" stroke="#2A6EBB" strokeWidth={2} />
+                <Line type="monotone" dataKey="days" stroke={accentFill} strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -102,7 +104,7 @@ export function PcpExecutiveDashboard() {
                     <td className="text-center">{row.d0_15}</td>
                     <td className="text-center">{row.d16_30}</td>
                     <td className="text-center bg-amber-500/20">{row.d31_60}</td>
-                    <td className="text-center bg-[#E31E24]/20 font-semibold">{row.d60plus}</td>
+                    <td className="text-center bg-primary/20 font-semibold">{row.d60plus}</td>
                   </tr>
                 ))}
               </tbody>
@@ -115,7 +117,7 @@ export function PcpExecutiveDashboard() {
         <CardHeader><CardTitle>Alert Feed</CardTitle></CardHeader>
         <CardContent className="space-y-2">
           {data.alerts?.map((a) => (
-            <p key={a} className="rounded-lg border border-[#E31E24]/20 bg-[#E31E24]/5 px-3 py-2 text-sm">{a}</p>
+            <p key={a} className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-sm">{a}</p>
           ))}
         </CardContent>
       </Card>

@@ -101,7 +101,7 @@ export function Sidebar() {
                   'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
                   isActive
                     ? item.pcp
-                      ? 'bg-[#E31E24]/10 text-[#E31E24] shadow-sm'
+                      ? 'bg-primary/10 text-primary shadow-sm'
                       : 'bg-primary/10 text-primary shadow-sm'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 )

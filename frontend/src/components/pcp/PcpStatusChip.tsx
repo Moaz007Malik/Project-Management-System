@@ -5,8 +5,8 @@ const styles: Record<PcpStatus, string> = {
   Draft: 'bg-gray-500/15 text-gray-700 dark:text-gray-300',
   'In Approval': 'bg-amber-500/15 text-amber-700 dark:text-amber-400',
   Approved: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
-  Rejected: 'bg-[#E31E24]/15 text-[#E31E24]',
-  Returned: 'bg-[#2A6EBB]/15 text-[#2A6EBB]',
+  Rejected: 'bg-primary/15 text-primary',
+  Returned: 'bg-accent/15 text-accent',
   Closed: 'bg-gray-700/15 text-gray-800 dark:text-gray-200',
 }
 

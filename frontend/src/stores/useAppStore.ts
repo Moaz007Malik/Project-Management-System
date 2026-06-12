@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Employee, PcpRole, SystemRole } from '@/types'
 import { syncPcpFromEmployee } from '@/lib/userContext'
+import { DEFAULT_COLOR_THEME, type ColorThemeId } from '@/lib/themes'
 
 interface NotificationPrefs {
   taskAssignments: boolean
@@ -13,6 +14,7 @@ interface NotificationPrefs {
 
 interface AppState {
   darkMode: boolean
+  colorTheme: ColorThemeId
   sidebarOpen: boolean
   currentUserId: string
   systemRole: SystemRole
@@ -20,6 +22,8 @@ interface AppState {
   businessUnit: string
   notificationPrefs: NotificationPrefs
   toggleDarkMode: () => void
+  setDarkMode: (dark: boolean) => void
+  setColorTheme: (theme: ColorThemeId) => void
   setSidebarOpen: (open: boolean) => void
   setCurrentUserId: (id: string) => void
   setCurrentUser: (employee: Employee) => void
@@ -39,6 +43,7 @@ export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
       darkMode: false,
+      colorTheme: DEFAULT_COLOR_THEME,
       sidebarOpen: true,
       currentUserId: 'emp-1',
       systemRole: 'Manager',
@@ -46,6 +51,8 @@ export const useAppStore = create<AppState>()(
       businessUnit: 'Construction – North',
       notificationPrefs: defaultPrefs,
       toggleDarkMode: () => set((s) => ({ darkMode: !s.darkMode })),
+      setDarkMode: (dark) => set({ darkMode: dark }),
+      setColorTheme: (theme) => set({ colorTheme: theme }),
       setSidebarOpen: (open) => set({ sidebarOpen: open }),
       setCurrentUserId: (id) => set({ currentUserId: id }),
       setCurrentUser: (employee) => {

@@ -35,7 +35,7 @@ export function ChatBot() {
       {!open && (
         <Button
           onClick={() => openChat()}
-          className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-[#E31E24] shadow-xl hover:bg-[#c9191f]"
+          className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-primary shadow-xl hover:bg-primary/90"
           size="icon"
           aria-label={`Open ${CHATBOT_NAME}`}
         >
@@ -45,9 +45,9 @@ export function ChatBot() {
 
       {open && (
         <div className="fixed bottom-6 right-6 z-50 flex h-[min(560px,calc(100vh-3rem))] w-[min(420px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
-          <div className="flex items-center justify-between border-b border-border bg-[#E31E24]/5 px-4 py-3">
+          <div className="flex items-center justify-between border-b border-border bg-primary/5 px-4 py-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E31E24] text-white">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-white">
                 <Bot className="h-5 w-5" />
               </div>
               <div>

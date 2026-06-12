@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { AuthGate } from '@/components/layout/AuthGate'
+import { ThemeSync } from '@/components/layout/ThemeSync'
 import { FallbackRoute } from '@/components/layout/FallbackRoute'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { RoleGuard } from '@/components/layout/RoleGuard'
@@ -28,6 +29,7 @@ import { PcpAiInsights } from '@/pages/pcp/PcpAiInsights'
 export default function App() {
   return (
     <AuthGate>
+      <ThemeSync />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />

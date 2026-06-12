@@ -85,7 +85,7 @@ export function PcpRevisions() {
           <CardHeader><CardTitle>Timeline</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             {revisions.length ? revisions.map((rev) => (
-              <div key={rev.id} className="relative border-l-2 border-[#2A6EBB] pl-4">
+              <div key={rev.id} className="relative border-l-2 border-accent pl-4">
                 <div className="flex items-center gap-2">
                   <p className="font-semibold">Rev. {rev.revision}</p>
                   <PcpStatusChip status={rev.status as 'Approved' | 'In Approval' | 'Draft'} />
@@ -144,8 +144,8 @@ export function PcpRevisions() {
                             <p className="text-xs text-muted-foreground">{compare.headcountA} positions</p>
                           )}
                         </div>
-                        <div className="rounded-lg border border-[#E31E24]/20 bg-[#E31E24]/5 p-3 text-sm">
-                          <p className="text-xs font-semibold uppercase text-[#E31E24]">Rev. {compare.revB.revision}</p>
+                        <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
+                          <p className="text-xs font-semibold uppercase text-primary">Rev. {compare.revB.revision}</p>
                           <p className="mt-1 line-clamp-2">{compare.revB.summary}</p>
                           {compare.monthlyTotalB != null && (
                             <p className="mt-2 font-medium">{formatAed(compare.monthlyTotalB)}/mo</p>
@@ -161,7 +161,7 @@ export function PcpRevisions() {
                       <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm font-medium">
                         {compare.deltaSummary}
                         {totalCostDelta !== 0 && totalCostDelta != null && !Number.isNaN(totalCostDelta) && (
-                          <span className="block mt-1 text-[#E31E24]">
+                          <span className="block mt-1 text-primary">
                             Net cost impact: {totalCostDelta > 0 ? '+' : ''}{formatAed(totalCostDelta)}/mo
                           </span>
                         )}
@@ -189,7 +189,7 @@ export function PcpRevisions() {
                               <td>
                                 <span className="text-muted-foreground line-through">{c.oldValue}</span>
                                 {' → '}
-                                <span className="font-semibold text-[#E31E24]">{c.newValue}</span>
+                                <span className="font-semibold text-primary">{c.newValue}</span>
                               </td>
                             </tr>
                           ))}

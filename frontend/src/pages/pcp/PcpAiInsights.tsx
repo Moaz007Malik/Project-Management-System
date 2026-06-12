@@ -5,9 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { usePcpStore } from '@/stores/usePcpStore'
 import { formatCurrency, formatCurrencyCompact } from '@/lib/utils'
+import { useThemeColors } from '@/lib/useThemeColors'
 
 export function PcpAiInsights() {
   const { insights, fetchInsights } = usePcpStore()
+  const { accentFill, primaryFill, accentFillSoft } = useThemeColors()
 
   useEffect(() => { fetchInsights() }, [fetchInsights])
 
@@ -49,7 +51,7 @@ export function PcpAiInsights() {
                   <p className="font-semibold">{n.title}</p>
                   <p className="text-sm text-muted-foreground">{n.description}</p>
                 </div>
-                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${n.recommendationType === 'inhouse' ? 'bg-[#2A6EBB]/15 text-[#2A6EBB]' : 'bg-[#E31E24]/15 text-[#E31E24]'}`}>
+                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${n.recommendationType === 'inhouse' ? 'bg-accent/15 text-accent' : 'bg-primary/15 text-primary'}`}>
                   {n.recommendation}
                 </span>
               </div>
@@ -70,8 +72,8 @@ export function PcpAiInsights() {
                 <XAxis dataKey="month" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip />
-                <Line type="monotone" dataKey="actual" stroke="#2A6EBB" strokeWidth={2} dot />
-                <Line type="monotone" dataKey="projected" stroke="#E31E24" strokeWidth={2} strokeDasharray="5 5" dot />
+                <Line type="monotone" dataKey="actual" stroke={accentFill} strokeWidth={2} dot />
+                <Line type="monotone" dataKey="projected" stroke={primaryFill} strokeWidth={2} strokeDasharray="5 5" dot />
               </ComposedChart>
             </ResponsiveContainer>
           </CardContent>
@@ -85,8 +87,8 @@ export function PcpAiInsights() {
                 <XAxis dataKey="month" fontSize={12} />
                 <YAxis tickFormatter={(v) => formatCurrencyCompact(Number(v))} fontSize={12} />
                 <Tooltip formatter={(v) => formatCurrency(Number(v))} />
-                <Area type="monotone" dataKey="budget" fill="#2A6EBB22" stroke="#2A6EBB" />
-                <Line type="monotone" dataKey="projected" stroke="#E31E24" strokeWidth={2} />
+                <Area type="monotone" dataKey="budget" fill={accentFillSoft} stroke={accentFill} />
+                <Line type="monotone" dataKey="projected" stroke={primaryFill} strokeWidth={2} />
               </ComposedChart>
             </ResponsiveContainer>
           </CardContent>
@@ -102,7 +104,7 @@ export function PcpAiInsights() {
         </CardContent>
       </Card>
 
-      <Card className="border-[#2A6EBB]/20 bg-[#2A6EBB]/5">
+      <Card className="border-accent/20 bg-accent/5">
         <CardHeader><CardTitle>Weekly Summary</CardTitle></CardHeader>
         <CardContent><p className="text-sm leading-relaxed">{data.weeklySummary}</p></CardContent>
       </Card>

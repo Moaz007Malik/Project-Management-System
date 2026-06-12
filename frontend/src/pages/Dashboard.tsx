@@ -77,7 +77,7 @@ export function Dashboard() {
           </Button>
         {canCreatePcp(systemRole, pcpRole) && (
           <Link to="/pcp/new">
-            <Button className="bg-[#E31E24] hover:bg-[#c9191f]">
+            <Button className="bg-primary hover:bg-primary/90">
               <FilePlus className="h-4 w-4" /> New PCP
             </Button>
           </Link>
@@ -182,7 +182,7 @@ export function Dashboard() {
               {requests.slice(0, 5).map((r) => (
                 <Link key={r.id} to={`/pcp/requests/${r.id}`} className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50">
                   <div>
-                    <p className="font-medium text-[#2A6EBB]">{r.pcpNo}</p>
+                    <p className="font-medium text-accent">{r.pcpNo}</p>
                     <p className="text-sm text-muted-foreground">{r.client} · {r.positionSummary || `${r.positions?.length} positions`}</p>
                   </div>
                   <PcpStatusChip status={r.status} />

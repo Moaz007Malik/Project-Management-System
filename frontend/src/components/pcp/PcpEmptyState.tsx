@@ -10,13 +10,13 @@ export function PcpEmptyState({ title, description, actionLabel = 'Create your f
 }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 px-6 py-16 text-center">
-      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#E31E24]/10 text-[#E31E24]">
+      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
         <FilePlus className="h-7 w-7" />
       </div>
       <h3 className="text-lg font-semibold">{title}</h3>
       <p className="mt-1 max-w-md text-sm text-muted-foreground">{description}</p>
       <Link to={actionTo}>
-        <Button className="mt-6 bg-[#E31E24] hover:bg-[#c9191f]">{actionLabel}</Button>
+        <Button className="mt-6 bg-primary hover:bg-primary/90">{actionLabel}</Button>
       </Link>
     </div>
   )
