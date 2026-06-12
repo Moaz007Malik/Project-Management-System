@@ -25,11 +25,13 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import pcpRoutes from './pcp.js';
 import authRoutes from './auth.js';
+import chatRoutes from './chat.js';
 import { sanitizeEmployee, hashPassword, defaultPasswordForRole } from '../services/authService.js';
 
 const router = Router();
 
 router.use('/auth', authRoutes);
+router.use('/chat', chatRoutes);
 const MAX_DOCUMENT_BYTES = 5 * 1024 * 1024;
 
 async function deleteDocumentsForEntity(entityType, entityId) {

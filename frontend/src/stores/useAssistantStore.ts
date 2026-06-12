@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { processAssistantMessage } from '@/lib/assistantEngine'
+import { processAssistantMessage, type AssistantLink } from '@/lib/assistantEngine'
 import type { ChatContext } from '@/lib/chatbotEngine'
 
 export interface AssistantMessage {
@@ -9,6 +9,7 @@ export interface AssistantMessage {
   table?: Record<string, unknown>[]
   source?: string
   actions?: string[]
+  links?: AssistantLink[]
 }
 
 interface AssistantState {
@@ -17,7 +18,14 @@ interface AssistantState {
   loading: boolean
   initialized: boolean
   initWelcome: (_pathname: string, welcome: string) => void
-  send: (text: string, pathname: string, pcpRole: string, businessUnit: string, userId?: string) => Promise<void>
+  send: (
+    text: string,
+    pathname: string,
+    pcpRole: string,
+    businessUnit: string,
+    userId?: string,
+    systemRole?: string,
+  ) => Promise<void>
   clear: (welcome: string) => void
 }
 
@@ -35,24 +43,33 @@ export const useAssistantStore = create<AssistantState>((set, get) => ({
     })
   },
 
-  send: async (text, pathname, pcpRole, businessUnit, userId) => {
-    const trimmed = text.trim()
-    if (!trimmed || get().loading) return
+      send: async (text, pathname, pcpRole, businessUnit, userId, systemRole) => {
+        const trimmed = text.trim()
+        if (!trimmed || get().loading) return
 
-    set((s) => ({
-      loading: true,
-      messages: [...s.messages, { id: `u-${Date.now()}`, role: 'user', text: trimmed }],
-    }))
+        const priorMessages = get().messages
 
-    try {
-      const { context } = get()
-      const reply = await processAssistantMessage(trimmed, {
-        pathname,
-        pcpRole,
-        businessUnit,
-        userId,
-        context,
-      })
+        set((s) => ({
+          loading: true,
+          messages: [...s.messages, { id: `u-${Date.now()}`, role: 'user', text: trimmed }],
+        }))
+
+        try {
+          const { context } = get()
+          const history = priorMessages
+            .filter((m) => m.id !== 'welcome')
+            .slice(-10)
+            .map((m) => ({ role: m.role, text: m.text }))
+
+          const reply = await processAssistantMessage(trimmed, {
+            pathname,
+            pcpRole,
+            businessUnit,
+            userId,
+            systemRole,
+            context,
+            history,
+          })
 
       set((s) => ({
         loading: false,
@@ -66,6 +83,7 @@ export const useAssistantStore = create<AssistantState>((set, get) => ({
             table: reply.table,
             source: reply.source,
             actions: reply.actions,
+            links: reply.links,
           },
         ],
       }))

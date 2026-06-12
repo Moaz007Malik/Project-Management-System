@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { api } from '@/lib/api'
 import { useLocation } from 'react-router-dom'
 import { X, Bot } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -10,15 +11,22 @@ import { AssistantPanel } from './AssistantPanel'
 
 export function ChatBot() {
   const location = useLocation()
+  const [groqEnabled, setGroqEnabled] = useState(false)
   const { open, pendingQuery, openChat, closeChat, clearPendingQuery } = useChatBotStore()
-  const { pcpRole, businessUnit, currentUserId } = useAppStore()
+  const { pcpRole, businessUnit, currentUserId, systemRole } = useAppStore()
   const send = useAssistantStore((s) => s.send)
+
+  useEffect(() => {
+    api.get<{ enabled?: boolean }>('/chat/status', { skipAuth: true })
+      .then((s) => setGroqEnabled(Boolean(s.enabled)))
+      .catch(() => setGroqEnabled(false))
+  }, [])
 
   useEffect(() => {
     if (!open || !pendingQuery) return
     const query = pendingQuery
     clearPendingQuery()
-    void send(query, location.pathname, pcpRole || 'Requester', businessUnit, currentUserId)
+    void send(query, location.pathname, pcpRole || 'Requester', businessUnit, currentUserId, systemRole)
   }, [
     open,
     pendingQuery,
@@ -28,6 +36,7 @@ export function ChatBot() {
     pcpRole,
     businessUnit,
     currentUserId,
+    systemRole,
   ])
 
   return (
@@ -52,7 +61,9 @@ export function ChatBot() {
               </div>
               <div>
                 <p className="text-sm font-semibold">{CHATBOT_NAME}</p>
-                <p className="text-[10px] text-muted-foreground">Projects, PCP, budgets &amp; skills</p>
+                <p className="text-[10px] text-muted-foreground">
+                  {groqEnabled ? 'Powered by Groq · project data & hiring' : 'Projects, PCP, budgets & skills'}
+                </p>
               </div>
             </div>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={closeChat}>

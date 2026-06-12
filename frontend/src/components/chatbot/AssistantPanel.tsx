@@ -27,7 +27,7 @@ interface AssistantPanelProps {
 
 export function AssistantPanel({ className }: AssistantPanelProps) {
   const location = useLocation()
-  const { pcpRole, businessUnit, currentUserId } = useAppStore()
+  const { pcpRole, businessUnit, currentUserId, systemRole } = useAppStore()
   const { messages, loading, initWelcome, send } = useAssistantStore()
   const bottomRef = useRef<HTMLDivElement>(null)
   const [input, setInput] = useState('')
@@ -46,7 +46,7 @@ export function AssistantPanel({ className }: AssistantPanelProps) {
   const handleSend = (text: string) => {
     const msg = text.trim()
     if (!msg) return
-    send(msg, location.pathname, pcpRole || 'Requester', businessUnit, currentUserId)
+    send(msg, location.pathname, pcpRole || 'Requester', businessUnit, currentUserId, systemRole)
     setInput('')
   }
 
@@ -98,7 +98,22 @@ export function AssistantPanel({ className }: AssistantPanelProps) {
                     </table>
                   </div>
                 )}
-                {msg.actions && msg.actions.length > 0 && (
+                {msg.links && msg.links.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {msg.links.map((link) => (
+                      <a
+                        key={link.url}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex h-7 items-center rounded-md border border-accent px-2.5 text-xs text-accent transition-colors hover:bg-accent/10"
+                      >
+                        {link.platform}
+                      </a>
+                    ))}
+                  </div>
+                )}
+                {msg.actions && msg.actions.length > 0 && !msg.links?.length && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {msg.actions.map((a) => (
                       <Button key={a} size="sm" variant="outline" className="h-7 border-accent text-xs text-accent">
