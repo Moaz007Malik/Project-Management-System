@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { AuthGate } from '@/components/layout/AuthGate'
 import { ThemeSync } from '@/components/layout/ThemeSync'
@@ -25,6 +25,8 @@ import { PcpApprovalQueue } from '@/pages/pcp/PcpApprovalQueue'
 import { PcpRevisions } from '@/pages/pcp/PcpRevisions'
 import { PcpExecutiveDashboard } from '@/pages/pcp/PcpExecutiveDashboard'
 import { PcpAiInsights } from '@/pages/pcp/PcpAiInsights'
+import { PcpAdmin } from '@/pages/pcp/PcpAdmin'
+import { PcpAssistant } from '@/pages/pcp/PcpAssistant'
 
 export default function App() {
   return (
@@ -56,7 +58,8 @@ export default function App() {
               <Route path="pcp/revisions" element={<PcpRevisions />} />
               <Route path="pcp/executive" element={<PcpExecutiveDashboard />} />
               <Route path="pcp/insights" element={<PcpAiInsights />} />
-              <Route path="pcp/assistant" element={<Navigate to="/" replace />} />
+              <Route path="pcp/assistant" element={<PcpAssistant />} />
+              <Route path="admin" element={<PcpAdmin />} />
             </Route>
           </Route>
           </Route>

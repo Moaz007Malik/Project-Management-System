@@ -8,14 +8,15 @@ import { PcpStatusChip } from '@/components/pcp/PcpStatusChip'
 import { VarianceBadge } from '@/components/pcp/VarianceBadge'
 import { PcpEmptyState } from '@/components/pcp/PcpEmptyState'
 import { usePcpStore } from '@/stores/usePcpStore'
-import { useAppStore } from '@/stores/useAppStore'
+import { useEffectiveRoles } from '@/lib/useEffectiveRoles'
 
 interface PcpListProps {
   mode?: 'mine' | 'all'
 }
 
 export function PcpList({ mode = 'mine' }: PcpListProps) {
-  const { pcpRole, businessUnit, currentUserId } = useAppStore()
+  const { pcpRole, businessUnit, currentUserId } = useEffectiveRoles()
+  const isExecutiveView = mode === 'all' && pcpRole === 'Executive'
   const { requests, masters, fetchRequests, fetchMasters } = usePcpStore()
   const [status, setStatus] = useState('All')
   const [client, setClient] = useState('All')
@@ -24,7 +25,7 @@ export function PcpList({ mode = 'mine' }: PcpListProps) {
   useEffect(() => {
     fetchMasters()
     fetchRequests({
-      role: mode === 'all' ? 'Admin' : (pcpRole || 'Requester'),
+      role: mode === 'all' ? (pcpRole === 'Executive' ? 'Executive' : 'Admin') : (pcpRole || 'Requester'),
       businessUnit: mode === 'all' ? '' : businessUnit,
       userId: currentUserId,
       status: status !== 'All' ? status : '',
@@ -34,11 +35,13 @@ export function PcpList({ mode = 'mine' }: PcpListProps) {
   }, [fetchRequests, fetchMasters, pcpRole, businessUnit, currentUserId, mode, status, client, search])
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 animate-fade-in min-w-0 sm:space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">{mode === 'all' ? 'PCPs (Personnel Cost Planning)' : 'My Requests'}</h1>
-          <p className="text-muted-foreground">Filterable list with export</p>
+          <h1 className="text-xl font-bold sm:text-2xl">{mode === 'all' ? (isExecutiveView ? 'All PCPs (view only)' : 'PCPs (Personnel Cost Planning)') : 'My Requests'}</h1>
+          <p className="text-muted-foreground">
+            {isExecutiveView ? 'Read-only executive view — no edits' : 'Filterable list with export'}
+          </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm"><Download className="h-4 w-4" /> PDF</Button>

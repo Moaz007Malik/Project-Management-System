@@ -73,12 +73,12 @@ export function ProjectDetail() {
   const healthColors = { green: 'text-emerald-600', yellow: 'text-amber-600', red: 'text-red-600' }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 animate-fade-in min-w-0 sm:space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate('/projects')}><ArrowLeft className="h-5 w-5" /></Button>
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">{project.name}</h1>
+            <h1 className="text-xl font-bold sm:text-2xl">{project.name}</h1>
             <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-medium', getStatusColor(project.status))}>{project.status}</span>
           </div>
           <p className="text-muted-foreground">{project.client} · PM: {project.projectManager} · {progress}% complete</p>

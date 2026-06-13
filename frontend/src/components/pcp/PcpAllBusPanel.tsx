@@ -45,32 +45,32 @@ export function PcpAllBusPanel({ requests, businessUnits }: PcpAllBusPanelProps)
   )
 
   return (
-    <>
+    <div className="flex min-w-0 flex-col gap-4 sm:gap-6">
       <Card>
         <CardHeader><CardTitle>PCPs by Business Unit</CardTitle></CardHeader>
-        <CardContent className="overflow-x-auto">
-          <table className="w-full text-sm">
+        <CardContent className="table-scroll px-0 pt-0">
+          <table className="w-full min-w-[640px] text-sm">
             <thead>
               <tr className="border-b text-left text-muted-foreground">
-                <th className="py-2 pr-4">Business Unit</th>
+                <th className="py-2 pl-4 pr-4">Business Unit</th>
                 <th className="py-2 px-2 text-center">PCPs</th>
                 <th className="py-2 px-2 text-center">In Approval</th>
                 <th className="py-2 px-2 text-center">Approved</th>
                 <th className="py-2 px-2 text-center">Draft</th>
                 <th className="py-2 px-2 text-center">Vacant</th>
-                <th className="py-2 pl-2 text-right">Monthly Cost</th>
+                <th className="py-2 pl-2 pr-4 text-right">Monthly Cost</th>
               </tr>
             </thead>
             <tbody>
               {buStats.map((bu) => (
                 <tr key={bu.name} className="border-b last:border-0">
-                  <td className="py-3 pr-4 font-medium">{bu.name}</td>
+                  <td className="py-3 pl-4 pr-4 font-medium">{bu.name}</td>
                   <td className="py-3 px-2 text-center">{bu.total}</td>
                   <td className="py-3 px-2 text-center text-amber-600 font-medium">{bu.inApproval}</td>
                   <td className="py-3 px-2 text-center text-emerald-600">{bu.approved}</td>
                   <td className="py-3 px-2 text-center text-muted-foreground">{bu.draft}</td>
                   <td className="py-3 px-2 text-center">{bu.vacant}</td>
-                  <td className="py-3 pl-2 text-right font-medium">{formatAed(bu.monthly)}</td>
+                  <td className="py-3 pl-2 pr-4 text-right font-medium">{formatAed(bu.monthly)}</td>
                 </tr>
               ))}
             </tbody>
@@ -141,6 +141,6 @@ export function PcpAllBusPanel({ requests, businessUnits }: PcpAllBusPanelProps)
           ))}
         </CardContent>
       </Card>
-    </>
+    </div>
   )
 }

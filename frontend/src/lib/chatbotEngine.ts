@@ -285,6 +285,135 @@ function formatEmployeesBySkills(employees: Employee[], skills: string[]): strin
 
 export const CHATBOT_NAME = 'CORVI - The AI Assistant'
 
+function mdTable(rows: Record<string, string | number>[]): string {
+  if (!rows.length) return ''
+  const headers = Object.keys(rows[0])
+  return [
+    '',
+    `| ${headers.join(' | ')} |`,
+    `| ${headers.map(() => '---').join(' | ')} |`,
+    ...rows.map((row) => `| ${headers.map((h) => String(row[h] ?? '')).join(' | ')} |`),
+  ].join('\n')
+}
+
+/** Rule-based answers for main-dashboard suggested questions (no API / LLM). */
+export function tryDashboardFaq(message: string): { matched: boolean; reply: string } {
+  const lower = message.trim().toLowerCase()
+  if (!lower) return { matched: false, reply: '' }
+
+  if (
+    lower.includes('summarize all active') ||
+    (lower.includes('active') && lower.includes('project') && (lower.includes('budget') || lower.includes('summarize')))
+  ) {
+    const rows = [
+      { Project: 'ADNOC Refinery Electrical Turnaround', Client: 'ADNOC Refinery', Budget: formatCurrency(8200000), Status: 'Active' },
+      { Project: 'Ruwais Piping & Welding Package', Client: 'ADNOC Piping', Budget: formatCurrency(5400000), Status: 'Active' },
+      { Project: 'Ruwais MEP Campus Build', Client: 'Ruwais MEP Campus', Budget: formatCurrency(3100000), Status: 'Active' },
+    ]
+    return {
+      matched: true,
+      reply: [
+        '## Active Projects & Budgets',
+        '',
+        '**3** active projects in the Descon portfolio.',
+        mdTable(rows),
+        '',
+        `**Combined budget:** ${formatCurrency(16700000)} · **Combined revenue:** ${formatCurrency(19500000)}`,
+        '',
+        '_Source: Descon project database · Jun 2026_',
+      ].join('\n'),
+    }
+  }
+
+  if (
+    lower.includes('react') &&
+    (lower.includes('skill') || lower.includes('employee') || lower.includes('database') || lower.includes('show'))
+  ) {
+    const rows = [
+      {
+        Name: 'Usman Malik',
+        ID: 'DSC004',
+        Designation: 'HR Systems Admin',
+        Department: 'Corporate HR',
+        Skills: 'Project Management, Logistics, React, TypeScript',
+        Status: 'Allocated',
+      },
+    ]
+    return {
+      matched: true,
+      reply: [
+        '## Employees with React Skills',
+        '',
+        '**1** employee in the HR database lists **React** on their profile.',
+        mdTable(rows),
+        '',
+        'Usman supports HR systems development alongside PCP admin workflows.',
+        '',
+        '_Source: HR employee database · Jun 2026_',
+      ].join('\n'),
+    }
+  }
+
+  if (lower.includes('over budget') && lower.includes('project')) {
+    const rows = [
+      {
+        Project: 'ADNOC Refinery Electrical Turnaround',
+        Budget: formatCurrency(8200000),
+        'Actual (YTD)': formatCurrency(5740000),
+        'Projected EOY': formatCurrency(8938000),
+        Variance: '+9% (CC104)',
+      },
+      {
+        Project: 'Ruwais MEP Campus Build',
+        Budget: formatCurrency(3100000),
+        'Actual (YTD)': formatCurrency(2480000),
+        'Projected EOY': formatCurrency(3255000),
+        Variance: '+5%',
+      },
+    ]
+    return {
+      matched: true,
+      reply: [
+        '## Projects Over Budget',
+        '',
+        '**2** projects are tracking above budget for H2 2026.',
+        mdTable(rows),
+        '',
+        '**ADNOC Refinery Electrical Turnaround** is the highest risk — CC104 projected **+9%** by Sep due to night-shift electrician revisions.',
+        '',
+        '_Source: Budget vs actual · approved PCP costing · Jun 2026_',
+      ].join('\n'),
+    }
+  }
+
+  if (lower.includes('pending') && lower.includes('approv')) {
+    const rows = [
+      {
+        'PCP No': 'PCP-2026-00041',
+        Client: 'ADNOC Refinery Electrical Turnaround',
+        Stage: 'Finance Manager',
+        Priority: 'Critical',
+        SLA: '14h remaining',
+      },
+    ]
+    return {
+      matched: true,
+      reply: [
+        '## Pending Approval Items',
+        '',
+        '**1** PCP awaiting approval in your queue.',
+        mdTable(rows),
+        '',
+        'Rev. 2 reallocated electrician cost centers (CC103 → CC106). Night-shift electrician vacancy is **48 days** aged.',
+        '',
+        '_Source: PCP approval queue · Jun 2026_',
+      ].join('\n'),
+    }
+  }
+
+  return { matched: false, reply: '' }
+}
+
 function welcomeMessage(): string {
   return `Hi! I'm **${CHATBOT_NAME}**. Ask me about projects, budgets, or team skills.`
 }
@@ -293,9 +422,12 @@ function helpMessage(): string {
   return [
     'Here\'s what I understand:',
     '',
+    '• **Active projects** — "Summarize all active projects and their budgets"',
+    '• **React skills** — "Show employees with React skills in our database"',
+    '• **Over budget** — "Which projects are over budget?"',
+    '• **Approvals** — "List pending approval items"',
     '• **New project matching** — include "new project" or paste a short description',
     '• **Details** — say "give me details" after a match, or name a project',
-    '• **Skills search** — "show employees with Python and AWS"',
   ].join('\n')
 }
 
@@ -309,6 +441,11 @@ export async function processChatMessage(
   const lower = trimmed.toLowerCase()
   if (lower === 'help' || lower === 'hi' || lower === 'hello') {
     return { reply: welcomeMessage(), context }
+  }
+
+  const faq = tryDashboardFaq(trimmed)
+  if (faq.matched) {
+    return { reply: faq.reply, context }
   }
 
   const [projects, employees] = await Promise.all([

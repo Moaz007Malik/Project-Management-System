@@ -55,9 +55,9 @@ export function Reports() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 animate-fade-in min-w-0 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Reports</h1>
+        <h1 className="text-xl font-bold sm:text-2xl">Reports</h1>
         <p className="text-muted-foreground">Generate and export business intelligence reports</p>
       </div>
 

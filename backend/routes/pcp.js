@@ -2,10 +2,11 @@ import { Router } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { repos } from '../repositories/index.js';
 import {
-  pcpMasters,
   pcpInsights,
   executiveDashboard,
 } from '../utils/pcpSeedData.js';
+import { getMasters, addMasterItem, removeMasterItem, updateMasterItem } from '../services/pcpMastersService.js';
+import { hashPassword } from '../services/authService.js';
 
 const router = Router();
 
@@ -28,6 +29,8 @@ function employeeToPcpUser(emp) {
     businessUnit: emp.businessUnit || emp.department,
     designation: emp.designation,
     active: emp.active !== false,
+    onLeave: Boolean(emp.onLeave),
+    approvalDelegateId: emp.approvalDelegateId || null,
   };
 }
 
@@ -72,14 +75,39 @@ function enrichRequest(req) {
 
 router.get('/masters', async (_req, res) => {
   try {
-    const projects = await repos.projects.getAll();
-    const clients = [...new Set(projects.map((p) => p.name))];
-    res.json({
-      ...pcpMasters,
-      clients: clients.length ? clients : pcpMasters.clients,
-    });
+    res.json(await getMasters());
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/masters/items', async (req, res) => {
+  try {
+    const { category, value } = req.body;
+    if (!category || value === undefined) {
+      return res.status(400).json({ error: 'category and value are required' });
+    }
+    res.json(await addMasterItem(category, value));
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.put('/masters/items/:category/:index', async (req, res) => {
+  try {
+    const index = parseInt(req.params.index, 10);
+    res.json(await updateMasterItem(req.params.category, index, req.body.value));
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.delete('/masters/items/:category/:index', async (req, res) => {
+  try {
+    const index = parseInt(req.params.index, 10);
+    res.json(await removeMasterItem(req.params.category, index));
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 });
 
@@ -92,10 +120,167 @@ router.get('/users', async (_req, res) => {
   }
 });
 
+router.post('/users', async (req, res) => {
+  try {
+    const {
+      fullName,
+      email,
+      password,
+      role,
+      businessUnit,
+      designation,
+      active = true,
+    } = req.body;
+
+    if (!fullName?.trim()) {
+      return res.status(400).json({ error: 'Full name is required' });
+    }
+    if (!email?.trim()) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+    if (!password || String(password).length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+    if (!role) {
+      return res.status(400).json({ error: 'PCP role is required' });
+    }
+    if (!businessUnit?.trim()) {
+      return res.status(400).json({ error: 'Business unit is required' });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const employees = await repos.employees.getAll();
+    if (employees.some((e) => e.email?.toLowerCase() === normalizedEmail)) {
+      return res.status(400).json({ error: 'Email is already in use' });
+    }
+
+    const nextNum = employees.length + 1;
+    const systemRole = role === 'Admin' ? 'Admin' : 'Manager';
+    const employee = {
+      id: uuidv4(),
+      employeeId: `DSC${String(nextNum).padStart(3, '0')}`,
+      fullName: fullName.trim(),
+      email: normalizedEmail,
+      department: businessUnit.trim(),
+      businessUnit: businessUnit.trim(),
+      designation: designation?.trim() || role,
+      systemRole,
+      pcpRole: role,
+      active: active !== false,
+      onLeave: false,
+      approvalDelegateId: null,
+      skills: ['Project Management'],
+      hourlyRate: 60,
+      monthlySalary: 9600,
+      capacityHours: 40,
+      availability: 20,
+      status: 'Available',
+      passwordHash: await hashPassword(String(password)),
+    };
+
+    await repos.employees.create(employee);
+    res.status(201).json(employeeToPcpUser(employee));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get('/approval-chains', async (_req, res) => {
   try {
     const chains = await repos.pcpApprovalChains.getAll();
     res.json(chains);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/approval-chains', async (req, res) => {
+  try {
+    const chain = {
+      id: uuidv4(),
+      businessUnit: req.body.businessUnit,
+      gradeMin: req.body.gradeMin || 'B1',
+      gradeMax: req.body.gradeMax || 'B3',
+      budgetThreshold: Number(req.body.budgetThreshold) || 0,
+      steps: req.body.steps || [],
+    };
+    if (!chain.businessUnit || !chain.steps.length) {
+      return res.status(400).json({ error: 'businessUnit and steps are required' });
+    }
+    await repos.pcpApprovalChains.create(chain);
+    res.status(201).json(chain);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.put('/approval-chains/:id', async (req, res) => {
+  try {
+    const existing = await repos.pcpApprovalChains.getById(req.params.id);
+    if (!existing) return res.status(404).json({ error: 'Chain not found' });
+    const updated = { ...existing, ...req.body, id: existing.id };
+    await repos.pcpApprovalChains.update(existing.id, updated);
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete('/approval-chains/:id', async (req, res) => {
+  try {
+    await repos.pcpApprovalChains.delete(req.params.id);
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.put('/users/:id', async (req, res) => {
+  try {
+    const emp = await repos.employees.getById(req.params.id);
+    if (!emp) return res.status(404).json({ error: 'User not found' });
+
+    if (req.body.password !== undefined && req.body.password !== '') {
+      if (String(req.body.password).length < 6) {
+        return res.status(400).json({ error: 'Password must be at least 6 characters' });
+      }
+    }
+
+    const updates = {
+      pcpRole: req.body.role ?? emp.pcpRole,
+      businessUnit: req.body.businessUnit ?? emp.businessUnit,
+      department: req.body.businessUnit ?? emp.businessUnit ?? emp.department,
+      active: req.body.active !== undefined ? Boolean(req.body.active) : emp.active !== false,
+      onLeave: req.body.onLeave !== undefined ? Boolean(req.body.onLeave) : Boolean(emp.onLeave),
+      approvalDelegateId: req.body.approvalDelegateId || null,
+    };
+
+    if (req.body.fullName?.trim()) {
+      updates.fullName = req.body.fullName.trim();
+    }
+    if (req.body.email?.trim()) {
+      const normalizedEmail = req.body.email.trim().toLowerCase();
+      const employees = await repos.employees.getAll();
+      const duplicate = employees.find(
+        (e) => e.id !== emp.id && e.email?.toLowerCase() === normalizedEmail,
+      );
+      if (duplicate) {
+        return res.status(400).json({ error: 'Email is already in use' });
+      }
+      updates.email = normalizedEmail;
+    }
+    if (req.body.password) {
+      updates.passwordHash = await hashPassword(String(req.body.password));
+    }
+    if (updates.pcpRole === 'Admin') {
+      updates.systemRole = 'Admin';
+    } else if (emp.systemRole === 'Admin' && updates.pcpRole !== 'Admin') {
+      updates.systemRole = 'Manager';
+    }
+
+    const merged = { ...emp, ...updates };
+    await repos.employees.update(emp.id, merged);
+    res.json(employeeToPcpUser(merged));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -393,6 +578,17 @@ router.get('/insights', async (_req, res) => {
   }
 });
 
+function mdTable(rows) {
+  if (!rows?.length) return '';
+  const headers = Object.keys(rows[0]);
+  const lines = [
+    `| ${headers.join(' | ')} |`,
+    `| ${headers.map(() => '---').join(' | ')} |`,
+    ...rows.map((row) => `| ${headers.map((h) => String(row[h] ?? '')).join(' | ')} |`),
+  ];
+  return `\n\n${lines.join('\n')}`;
+}
+
 router.post('/assistant', async (req, res) => {
   try {
     const { message, role = 'Requester', businessUnit, userId } = req.body;
@@ -428,8 +624,7 @@ router.post('/assistant', async (req, res) => {
         });
       });
       return res.json({
-        text: `Found ${rows.length} vacant electrician position(s).`,
-        table: rows,
+        text: `## Vacant Electrician Positions\n\nFound **${rows.length}** vacant electrician position(s).${mdTable(rows)}`,
         source: `Based on ${requests.length} PCP records, ${businessUnit || 'your BU'}, Jan–Jun 2026`,
         actions: ['View in Dashboard'],
       });
@@ -437,8 +632,7 @@ router.post('/assistant', async (req, res) => {
 
     if (lower.includes('over budget') || lower.includes('cost center')) {
       return res.json({
-        text: 'CC104 and CC103 are over budget this quarter. CC104 leads at +9% projected variance.',
-        chart: executiveDashboard.budgetVsActual,
+        text: '## Budget Variance\n\n**CC104** and **CC103** are over budget this quarter. CC104 leads at **+9%** projected variance.',
         source: 'Based on approved PCP costing, Q2 2026',
         actions: ['View Full Report', 'Export Excel'],
       });
@@ -465,9 +659,39 @@ router.post('/assistant', async (req, res) => {
       });
     }
 
+    if (lower.includes('active project') || lower.includes('summarize all active')) {
+      const projects = await repos.projects.getAll();
+      const active = projects.filter((p) => p.status === 'Active' || p.status === 'In Progress');
+      const rows = active.map((p) => ({
+        project: p.name,
+        client: p.client,
+        budget: p.budget,
+        status: p.status,
+      }));
+      return res.json({
+        text: `## Active Projects\n\n**${active.length}** active project(s) in portfolio.${mdTable(rows)}`,
+        source: 'Descon project database',
+      });
+    }
+
+    if (lower.includes('react') && lower.includes('skill')) {
+      const employees = await repos.employees.getAll();
+      const matches = employees.filter((e) => e.skills?.some((s) => /react/i.test(s)));
+      const rows = matches.map((e) => ({
+        name: e.fullName,
+        designation: e.designation,
+        skills: (e.skills || []).join(', '),
+        status: e.status,
+      }));
+      return res.json({
+        text: `## Internal React Skills\n\n**${matches.length}** employee(s) with React skills.${mdTable(rows)}`,
+        source: 'HR employee database',
+      });
+    }
+
     if (lower.includes('summarize') || lower.includes('activity this month')) {
       return res.json({
-        text: `This month: ${requests.filter((r) => r.status === 'In Approval').length} PCPs in approval, ${requests.filter((r) => r.status === 'Approved').length} approved. Avg approval TAT 2.1 days. Notable: night-shift revisions on ADNOC Refinery Electrical Turnaround.`,
+        text: `## PCP Summary\n\nThis month: **${requests.filter((r) => r.status === 'In Approval').length}** PCPs in approval, **${requests.filter((r) => r.status === 'Approved').length}** approved. Avg approval TAT **2.1 days**. Notable: night-shift revisions on ADNOC Refinery Electrical Turnaround.`,
         source: `Based on ${requests.length} PCP records, Jun 2026`,
         actions: ['Export PDF'],
       });
@@ -475,16 +699,73 @@ router.post('/assistant', async (req, res) => {
 
     if (lower.includes('pending') && lower.includes('approval')) {
       const pending = requests.filter((r) => r.status === 'In Approval');
+      const rows = pending.map((r) => ({ pcpNo: r.pcpNo, client: r.client, stage: r.currentStage, sla: `${r.slaHoursRemaining || 0}h` }));
       return res.json({
-        text: `${pending.length} PCP(s) pending your approval.`,
-        table: pending.map((r) => ({ pcpNo: r.pcpNo, client: r.client, stage: r.currentStage, sla: `${r.slaHoursRemaining || 0}h` })),
+        text: `## Pending Approvals\n\n**${pending.length}** PCP(s) pending your approval.${mdTable(rows)}`,
         source: 'Approval queue',
       });
     }
 
+    if (
+      lower.includes('forecast') ||
+      lower.includes('insight') ||
+      lower.includes('weekly') ||
+      lower.includes('sourcing') ||
+      lower.includes('at risk') ||
+      lower.includes('headcount projection') ||
+      lower.includes('cost forecast') ||
+      lower.includes('time to fill') ||
+      lower.includes('time-to-fill') ||
+      (lower.includes('need') && lower.includes('identif'))
+    ) {
+      const needs = pcpInsights.needs || [];
+      if (lower.includes('weekly') || lower.includes('summarize this week')) {
+        return res.json({
+          text: `## Weekly Summary\n\n${pcpInsights.weeklySummary}`,
+          source: 'AI Insights · Jun 2026',
+        });
+      }
+      if (lower.includes('headcount') && lower.includes('forecast')) {
+        const hf = pcpInsights.headcountForecast;
+        const rows = hf.labels.map((label, i) => ({
+          Month: label,
+          Actual: hf.actual[i] ?? '—',
+          Projected: hf.projected[i] ?? '—',
+        }));
+        return res.json({
+          text: `## Headcount Forecast\n\nPeak projected **1,310** by Aug 2026.${mdTable(rows)}`,
+          source: 'Rolling workforce model',
+        });
+      }
+      if (lower.includes('cost') || lower.includes('at risk') || lower.includes('variance')) {
+        const cf = pcpInsights.costForecast;
+        const atRisk = cf.atRisk.map((r) => `- **${r.costCenter}** (+${r.variance}%) — ${r.note}`).join('\n');
+        return res.json({
+          text: `## Cost Forecast & Variance\n\n${atRisk}\n\nOpen **AI Insights** for full charts.`,
+          source: 'Approved PCP costing · H2 2026',
+          actions: ['View AI Insights'],
+        });
+      }
+      if (lower.includes('need') || lower.includes('sourcing') || lower.includes('agency') || lower.includes('welder')) {
+        const lines = needs.map(
+          (n) => `**${n.title}** — ${n.recommendation}\n${n.reasoning}`,
+        );
+        return res.json({
+          text: `## Identified Needs\n\n${lines.join('\n\n')}`,
+          source: 'Need identification engine',
+          actions: ['View AI Insights'],
+        });
+      }
+      return res.json({
+        text: `## AI Insights\n\n${pcpInsights.weeklySummary}\n\nOpen **AI Insights** for forecasts and sourcing cards.`,
+        source: 'CORVI — rule-based insights',
+        actions: ['View AI Insights'],
+      });
+    }
+
     res.json({
-      text: 'I can help with vacant positions, budget variance, revision comparisons, forecasts, and PCP summaries. Try one of the suggested questions.',
-      source: 'CORVI - The AI Assistant',
+      text: '## How I can help\n\n- Vacant positions & electrician roles\n- Budget variance by cost center\n- Revision comparisons\n- PCP summaries & pending approvals\n- Active projects & React skills\n\nTry one of the suggested questions below.',
+      source: 'CORVI — rule-based assistant',
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

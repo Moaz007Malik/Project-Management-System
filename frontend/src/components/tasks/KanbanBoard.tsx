@@ -67,7 +67,7 @@ function KanbanColumn({ column, tasks, selectedTaskId, onTaskSelect }: { column:
   const columnTasks = tasks.filter((t) => t.kanbanStatus === column)
 
   return (
-    <div className="flex w-72 shrink-0 flex-col">
+    <div className="flex w-[min(280px,85vw)] shrink-0 flex-col sm:w-72">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-semibold">{column}</h3>
         <Badge variant="secondary">{columnTasks.length}</Badge>

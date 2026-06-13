@@ -65,10 +65,10 @@ export function PcpRevisions() {
   )
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 animate-fade-in min-w-0 sm:space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Revision History</h1>
+          <h1 className="text-xl font-bold sm:text-2xl">Revision History</h1>
           <p className="text-muted-foreground">
             {pcp?.pcpNo ? `${pcp.pcpNo} · ` : ''}Every change tracked — nothing changes silently
           </p>

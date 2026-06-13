@@ -33,10 +33,10 @@ export function Tasks() {
   if (loading) return <Skeleton className="h-96" />
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 animate-fade-in min-w-0 sm:space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Task Board</h1>
+          <h1 className="text-xl font-bold sm:text-2xl">Task Board</h1>
           <p className="text-muted-foreground">Drag and drop tasks · {tasks.length} total</p>
         </div>
         <Button onClick={() => setFormOpen(true)}><Plus className="h-4 w-4" /> New Task</Button>

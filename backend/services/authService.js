@@ -10,6 +10,16 @@ export function defaultPasswordForRole(systemRole) {
   return 'Manager@123';
 }
 
+/** Demo password keyed by PCP role, then system role */
+export function defaultPasswordForEmployee(employee) {
+  const pcp = employee?.pcpRole;
+  if (pcp === 'Executive') return 'Executive@123';
+  if (pcp === 'Admin') return 'Admin@123';
+  if (pcp === 'Approver') return 'Approver@123';
+  if (pcp === 'Requester') return 'Requester@123';
+  return defaultPasswordForRole(employee?.systemRole || 'Manager');
+}
+
 export async function hashPassword(plain) {
   return bcrypt.hash(plain, 10);
 }

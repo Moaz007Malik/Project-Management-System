@@ -19,6 +19,7 @@ import { calcPositionMonthly, calcPositionTotal, chargingTotal, defaultBenefitAm
 import { validateHeader, validatePositions, validateCosting } from '@/lib/pcpValidation'
 import { api } from '@/lib/api'
 import { getPcpDefaultsFromProject } from '@/lib/projectPcpDefaults'
+import { getNeedPrefill } from '@/lib/insightsEngine'
 import { formatAed } from '@/lib/utils'
 import type { PcpPosition, PcpRequest, Project } from '@/types'
 
@@ -47,6 +48,7 @@ export function PcpNewRequest() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const projectId = searchParams.get('projectId')
+  const needId = searchParams.get('need')
   const { businessUnit, currentUserId } = useAppStore()
   const { employees, getEmployeeById, fetchEmployees } = useEmployeeStore()
   const currentUser = getEmployeeById(currentUserId)
@@ -57,6 +59,7 @@ export function PcpNewRequest() {
   const [sourceProject, setSourceProject] = useState<Project | null>(null)
   const [projectLoading, setProjectLoading] = useState(!!projectId)
   const projectPrefilled = useRef(false)
+  const needPrefilled = useRef(false)
   const [header, setHeader] = useState({
     client: 'ADNOC Refinery Electrical Turnaround',
     clientLocation: 'Abu Dhabi',
@@ -72,6 +75,35 @@ export function PcpNewRequest() {
 
   useEffect(() => { fetchMasters() }, [fetchMasters])
   useEffect(() => { if (projectId) fetchEmployees() }, [projectId, fetchEmployees])
+
+  useEffect(() => {
+    if (!needId || needPrefilled.current) return
+    const prefill = getNeedPrefill(needId)
+    if (!prefill) return
+    needPrefilled.current = true
+    setHeader((h) => ({
+      ...h,
+      client: prefill.client,
+      clientLocation: prefill.clientLocation,
+      businessUnit: prefill.businessUnit,
+    }))
+    setPositions(
+      prefill.positions.map((p) => ({
+        ...emptyPosition(),
+        title: p.title,
+        jobFamily: p.jobFamily,
+        count: p.count,
+        shift: p.shift,
+        grade: 'B2',
+        marketSalary: 12000,
+        proposedSalary: 12500,
+        benefits: [{ name: 'Housing', amount: 2000 }, { name: 'Transport', amount: 800 }],
+        contractDuration: '12',
+        noticePeriod: '30',
+        probationPeriod: '3',
+      })),
+    )
+  }, [needId])
 
   useEffect(() => {
     if (!projectId) return
@@ -182,7 +214,7 @@ export function PcpNewRequest() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 animate-fade-in min-w-0 sm:space-y-6">
       <div>
         {sourceProject && (
           <Link
@@ -192,7 +224,7 @@ export function PcpNewRequest() {
             <ArrowLeft className="h-4 w-4" /> Back to {sourceProject.name}
           </Link>
         )}
-        <h1 className="text-2xl font-bold">New PCP Request</h1>
+        <h1 className="text-xl font-bold sm:text-2xl">New PCP Request</h1>
         <p className="text-muted-foreground">4-step wizard · mandatory fields marked with <span className="text-primary">*</span></p>
       </div>
 

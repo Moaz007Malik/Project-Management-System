@@ -66,6 +66,11 @@ export const useAppStore = create<AppState>()(
       toggleNotificationPref: (key) =>
         set((s) => ({ notificationPrefs: { ...s.notificationPrefs, [key]: !s.notificationPrefs[key] } })),
     }),
-    { name: 'app-settings' }
+    { name: 'app-settings', partialize: (s) => ({
+      darkMode: s.darkMode,
+      colorTheme: s.colorTheme,
+      sidebarOpen: s.sidebarOpen,
+      notificationPrefs: s.notificationPrefs,
+    }) },
   )
 )

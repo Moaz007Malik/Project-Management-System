@@ -325,6 +325,8 @@ export interface PcpUser {
   businessUnit: string
   designation: string
   active: boolean
+  onLeave?: boolean
+  approvalDelegateId?: string | null
 }
 
 export interface PcpMasters {

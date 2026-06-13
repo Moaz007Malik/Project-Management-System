@@ -65,7 +65,7 @@ export function AssigneeSuggestions({ skills, taskId, onSelect, fetchSuggestions
               </div>
               <span className="text-sm font-bold text-primary">{s.score}</span>
             </div>
-            <div className="mt-2 grid grid-cols-3 gap-2 text-center text-xs">
+            <div className="mt-2 grid grid-cols-1 gap-2 text-center text-xs sm:grid-cols-3">
               <div>
                 <p className="font-semibold text-emerald-600">{s.skillMatch}%</p>
                 <p className="text-muted-foreground">Skill Match</p>

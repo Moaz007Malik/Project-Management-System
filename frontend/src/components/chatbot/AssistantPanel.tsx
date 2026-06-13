@@ -4,22 +4,10 @@ import { Send, Bot, User, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import { MarkdownContent } from '@/components/ui/MarkdownContent'
 import { getAssistantSuggestions, getAssistantWelcome } from '@/lib/assistantEngine'
 import { useAssistantStore } from '@/stores/useAssistantStore'
 import { useAppStore } from '@/stores/useAppStore'
-
-function renderBotText(text: string) {
-  const parts = text.split(/(\*\*[^*]+\*\*|_[^_]+_)/g)
-  return parts.map((part, i) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={i}>{part.slice(2, -2)}</strong>
-    }
-    if (part.startsWith('_') && part.endsWith('_')) {
-      return <em key={i} className="text-muted-foreground">{part.slice(1, -1)}</em>
-    }
-    return <span key={i}>{part}</span>
-  })
-}
 
 interface AssistantPanelProps {
   className?: string
@@ -69,16 +57,20 @@ export function AssistantPanel({ className }: AssistantPanelProps) {
               </div>
               <div
                 className={cn(
-                  'max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed',
+                  'min-w-0 max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed',
                   msg.role === 'user'
                     ? 'bg-primary text-white'
                     : 'bg-muted/60 text-foreground'
                 )}
               >
-                <div className="whitespace-pre-wrap">{msg.role === 'bot' ? renderBotText(msg.text) : msg.text}</div>
-                {msg.table && msg.table.length > 0 && (
-                  <div className="mt-3 overflow-x-auto rounded-lg border border-border bg-card">
-                    <table className="w-full text-xs">
+                {msg.role === 'bot' ? (
+                  <MarkdownContent content={msg.text} inverted={false} scrollableTables />
+                ) : (
+                  <span className="whitespace-pre-wrap">{msg.text}</span>
+                )}
+                {msg.table && msg.table.length > 0 && !msg.text.includes('|') && (
+                  <div className="chat-table-scroll mt-3">
+                    <table className="w-max min-w-full text-xs">
                       <thead>
                         <tr>
                           {Object.keys(msg.table[0]).map((k) => (

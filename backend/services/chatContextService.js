@@ -156,7 +156,7 @@ export async function buildChatContext({ pcpRole, businessUnit, userId, systemRo
 }
 
 export function buildSystemPrompt(context) {
-  return `You are CORVI, the AI assistant for Descon Project & Personnel Planning (ProMgmt).
+  return `You are CORVI, the AI assistant for Descon Personnel Cost Planning (ProMgmt).
 
 RULES:
 1. Answer using the DATABASE CONTEXT JSON below for projects, employees, PCPs, tasks, risks, issues, and KPIs.

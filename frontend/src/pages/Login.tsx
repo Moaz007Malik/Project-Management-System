@@ -45,11 +45,11 @@ export function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-white to-red-50/40 p-4 dark:from-slate-950 dark:via-background dark:to-red-950/20">
-      <div className="w-full max-w-md space-y-6 animate-fade-in">
+      <div className="w-full max-w-md space-y-4 animate-fade-in min-w-0 sm:space-y-6">
         <div className="text-center">
           <img src="/logo.png" alt="Descon" className="mx-auto mb-4 h-14 w-14 rounded-xl object-contain shadow-sm" />
-          <h1 className="text-2xl font-bold tracking-tight">Descon</h1>
-          <p className="text-sm text-muted-foreground">Project & Personnel Planning</p>
+          <h1 className="text-xl font-bold sm:text-2xl tracking-tight">Descon</h1>
+          <p className="text-sm text-muted-foreground">Personnel Cost Planning</p>
         </div>
 
         <Card className="border-border/80 shadow-xl">

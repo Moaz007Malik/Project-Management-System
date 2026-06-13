@@ -12,6 +12,7 @@ interface PcpState {
   insights: Record<string, unknown> | null
   loading: boolean
   fetchMasters: () => Promise<void>
+  setMasters: (masters: PcpMasters) => void
   fetchRequests: (params?: Record<string, string>) => Promise<void>
   fetchRequest: (id: string) => Promise<PcpRequest>
   fetchQueue: (params?: Record<string, string>) => Promise<void>
@@ -41,6 +42,8 @@ export const usePcpStore = create<PcpState>((set) => ({
     const masters = await api.get<PcpMasters>('/pcp/masters')
     set({ masters })
   },
+
+  setMasters: (masters) => set({ masters }),
 
   fetchRequests: async (params = {}) => {
     set({ loading: true })

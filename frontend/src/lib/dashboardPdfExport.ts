@@ -27,7 +27,7 @@ export function buildDashboardPdf(metrics: DashboardMetrics, options?: Dashboard
   let y = 18
 
   doc.setFontSize(18)
-  doc.text('Descon — Dashboard Report', 14, y)
+  doc.text('Descon — Personnel Cost Planning Report', 14, y)
   y += 7
   doc.setFontSize(10)
   doc.setTextColor(90)

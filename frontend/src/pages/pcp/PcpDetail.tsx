@@ -73,7 +73,7 @@ export function PcpDetail() {
   if (!pcp) return <p className="text-muted-foreground">Loading...</p>
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 animate-fade-in min-w-0 sm:space-y-6">
       {justSubmitted && (
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
           <p className="text-sm font-medium">Submitted successfully — status is now <PcpStatusChip status="In Approval" /></p>
@@ -84,7 +84,7 @@ export function PcpDetail() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-bold">{pcp.pcpNo}</h1>
+            <h1 className="text-xl font-bold sm:text-2xl">{pcp.pcpNo}</h1>
             <PcpStatusChip status={pcp.status} />
             <SapBadge status={pcp.sapSync} />
             <PriorityBadge priority={pcp.priority} />

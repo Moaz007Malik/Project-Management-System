@@ -26,29 +26,29 @@ export function Resources() {
   const utilization = metrics?.resourceUtilization || []
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 animate-fade-in min-w-0 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Resource Planning</h1>
+        <h1 className="text-xl font-bold sm:text-2xl">Resource Planning</h1>
         <p className="text-muted-foreground">Live capacity planning and utilization from assigned tasks</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card className="glass">
           <CardContent className="flex items-center gap-4 p-5">
             <Users className="h-8 w-8 text-primary" />
-            <div><p className="text-2xl font-bold">{employees.length}</p><p className="text-sm text-muted-foreground">Total Resources</p></div>
+            <div><p className="text-xl font-bold sm:text-2xl">{employees.length}</p><p className="text-sm text-muted-foreground">Total Resources</p></div>
           </CardContent>
         </Card>
         <Card className="glass">
           <CardContent className="flex items-center gap-4 p-5">
             <AlertTriangle className="h-8 w-8 text-amber-500" />
-            <div><p className="text-2xl font-bold">{utilization.filter((u) => u.utilization > 90).length}</p><p className="text-sm text-muted-foreground">Near Capacity (&gt;90%)</p></div>
+            <div><p className="text-xl font-bold sm:text-2xl">{utilization.filter((u) => u.utilization > 90).length}</p><p className="text-sm text-muted-foreground">Near Capacity (&gt;90%)</p></div>
           </CardContent>
         </Card>
         <Card className="glass">
           <CardContent className="flex items-center gap-4 p-5">
             <AlertTriangle className="h-8 w-8 text-red-500" />
-            <div><p className="text-2xl font-bold">{utilization.filter((u) => u.utilization > 100).length}</p><p className="text-sm text-muted-foreground">Overallocated</p></div>
+            <div><p className="text-xl font-bold sm:text-2xl">{utilization.filter((u) => u.utilization > 100).length}</p><p className="text-sm text-muted-foreground">Overallocated</p></div>
           </CardContent>
         </Card>
       </div>

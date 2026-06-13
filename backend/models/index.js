@@ -35,3 +35,4 @@ export const PcpRequest = createModel('PcpRequest', 'pcp_requests');
 export const PcpRevision = createModel('PcpRevision', 'pcp_revisions');
 export const PcpUser = createModel('PcpUser', 'pcp_users');
 export const PcpApprovalChain = createModel('PcpApprovalChain', 'pcp_approval_chains');
+export const PcpMasterConfig = createModel('PcpMasterConfig', 'pcp_master_config');

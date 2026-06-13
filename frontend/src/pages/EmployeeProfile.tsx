@@ -63,15 +63,15 @@ export function EmployeeProfile() {
   const { employee, timesheets, leaves, allocatedHours, utilization } = data
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 animate-fade-in min-w-0 sm:space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate('/hr')}><ArrowLeft className="h-5 w-5" /></Button>
         <div className="flex flex-1 items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-2xl font-bold text-primary">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-xl font-bold sm:text-2xl text-primary">
             {employee.fullName.split(' ').map((n) => n[0]).join('')}
           </div>
           <div>
-            <h1 className="text-2xl font-bold">{employee.fullName}</h1>
+            <h1 className="text-xl font-bold sm:text-2xl">{employee.fullName}</h1>
             <p className="text-muted-foreground">{employee.designation} · {employee.department}</p>
           </div>
           <span className={cn('rounded-full px-3 py-1 text-xs font-medium', getStatusColor(employee.status))}>{employee.status}</span>
@@ -82,7 +82,7 @@ export function EmployeeProfile() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Card><CardContent className="flex items-center gap-3 p-4"><Mail className="h-5 w-5 text-muted-foreground" /><div><p className="text-xs text-muted-foreground">Email</p><p className="text-sm">{employee.email}</p></div></CardContent></Card>
             <Card><CardContent className="flex items-center gap-3 p-4"><DollarSign className="h-5 w-5 text-muted-foreground" /><div><p className="text-xs text-muted-foreground">Hourly Rate</p><p className="text-sm font-semibold">{formatCurrency(employee.hourlyRate)}</p></div></CardContent></Card>
             <Card><CardContent className="flex items-center gap-3 p-4"><Briefcase className="h-5 w-5 text-muted-foreground" /><div><p className="text-xs text-muted-foreground">Capacity</p><p className="text-sm font-semibold">{employee.capacityHours}h/week</p></div></CardContent></Card>

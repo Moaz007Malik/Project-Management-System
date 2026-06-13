@@ -50,7 +50,7 @@ export function CapacityForecastCard({ employeeId, employeeName, fetchForecast, 
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-3 gap-3 text-center">
+        <div className="grid grid-cols-1 gap-3 text-center sm:grid-cols-3">
           <div className="rounded-lg bg-muted/50 p-2">
             <p className="text-lg font-bold">{forecast.capacityHours}h</p>
             <p className="text-[10px] text-muted-foreground">Capacity</p>

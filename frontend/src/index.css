@@ -159,3 +159,79 @@ body {
   background: hsl(var(--muted-foreground) / 0.3);
   border-radius: 3px;
 }
+
+/* ——— Responsive layout utilities ——— */
+.page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .page-stack {
+    gap: 1.5rem;
+  }
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .page-header {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+}
+
+.page-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+@media (min-width: 640px) {
+  .page-title {
+    font-size: 1.5rem;
+  }
+}
+
+.table-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-inline: 1rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 640px) {
+  .table-scroll {
+    padding-inline: 1.5rem;
+  }
+}
+
+/* Horizontal scroll for tables inside chatbot / assistant bubbles */
+.chat-table-scroll {
+  margin-block: 0.5rem;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 0.5rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card) / 0.5);
+  padding-inline: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.35) transparent;
+}
+
+.chat-table-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.chat-table-scroll::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.35);
+  border-radius: 999px;
+}

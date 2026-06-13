@@ -17,6 +17,7 @@ import {
   PcpRevision,
   PcpUser,
   PcpApprovalChain,
+  PcpMasterConfig,
 } from '../models/index.js';
 
 export const repos = {
@@ -37,4 +38,5 @@ export const repos = {
   pcpRevisions: new MongoRepository(PcpRevision),
   pcpUsers: new MongoRepository(PcpUser),
   pcpApprovalChains: new MongoRepository(PcpApprovalChain),
+  pcpMasterConfig: new MongoRepository(PcpMasterConfig),
 };

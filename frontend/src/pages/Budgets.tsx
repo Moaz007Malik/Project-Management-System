@@ -28,17 +28,17 @@ export function Budgets() {
   const healthIcons = { green: '🟢', yellow: '🟡', red: '🔴' }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-4 animate-fade-in min-w-0 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Budget Management</h1>
+        <h1 className="text-xl font-bold sm:text-2xl">Budget Management</h1>
         <p className="text-muted-foreground">Live planned vs actual costs calculated from tasks and approved timesheets</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-4">
-        <Card className="glass"><CardContent className="p-5"><p className="text-xs text-muted-foreground">Total Budget</p><p className="text-2xl font-bold">{formatCurrency(metrics.kpis.totalBudget)}</p></CardContent></Card>
-        <Card className="glass"><CardContent className="p-5"><p className="text-xs text-muted-foreground">Planned Cost</p><p className="text-2xl font-bold">{formatCurrency(metrics.kpis.totalPlannedCost)}</p></CardContent></Card>
-        <Card className="glass"><CardContent className="p-5"><p className="text-xs text-muted-foreground">Actual Cost</p><p className="text-2xl font-bold">{formatCurrency(metrics.kpis.totalActualCost)}</p></CardContent></Card>
-        <Card className="glass"><CardContent className="p-5"><p className="text-xs text-muted-foreground">Utilization</p><p className="text-2xl font-bold">{metrics.kpis.budgetUtilization}%</p></CardContent></Card>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="glass"><CardContent className="p-5"><p className="text-xs text-muted-foreground">Total Budget</p><p className="text-xl font-bold sm:text-2xl">{formatCurrency(metrics.kpis.totalBudget)}</p></CardContent></Card>
+        <Card className="glass"><CardContent className="p-5"><p className="text-xs text-muted-foreground">Planned Cost</p><p className="text-xl font-bold sm:text-2xl">{formatCurrency(metrics.kpis.totalPlannedCost)}</p></CardContent></Card>
+        <Card className="glass"><CardContent className="p-5"><p className="text-xs text-muted-foreground">Actual Cost</p><p className="text-xl font-bold sm:text-2xl">{formatCurrency(metrics.kpis.totalActualCost)}</p></CardContent></Card>
+        <Card className="glass"><CardContent className="p-5"><p className="text-xs text-muted-foreground">Utilization</p><p className="text-xl font-bold sm:text-2xl">{metrics.kpis.budgetUtilization}%</p></CardContent></Card>
       </div>
 
       <div className="space-y-4">
@@ -64,7 +64,7 @@ export function Budgets() {
                   </div>
                 </div>
                 <Progress value={p.actualCost} max={p.budget} showLabel color={barColor} />
-                <div className="grid grid-cols-4 gap-4 text-center text-sm">
+                <div className="grid grid-cols-2 gap-3 text-center text-sm sm:grid-cols-4 sm:gap-4">
                   <div><p className="text-muted-foreground">Budget</p><p className="font-semibold">{formatCurrency(p.budget)}</p></div>
                   <div><p className="text-muted-foreground">Planned</p><p className="font-semibold">{formatCurrency(p.plannedCost)}</p></div>
                   <div><p className="text-muted-foreground">Actual</p><p className="font-semibold">{formatCurrency(p.actualCost)}</p></div>

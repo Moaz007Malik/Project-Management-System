@@ -14,12 +14,12 @@ interface KPICardProps {
 export function KPICard({ title, value, icon: Icon, trend, subtitle, className }: KPICardProps) {
   return (
     <Card className={cn('group overflow-hidden', className)}>
-      <CardContent className="p-5">
-        <div className="flex items-start justify-between">
-          <div className="space-y-2">
+      <CardContent className="p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1 space-y-2">
             <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="text-2xl font-bold tracking-tight">{value}</p>
-            {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
+            <p className="text-xl font-bold tracking-tight break-words sm:text-2xl">{value}</p>
+            {subtitle && <p className="text-xs text-muted-foreground break-words">{subtitle}</p>}
             {trend !== undefined && trend !== 0 && (
               <div className={cn('flex items-center gap-1 text-xs font-medium', trend >= 0 ? 'text-emerald-600' : 'text-red-500')}>
                 {trend >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}

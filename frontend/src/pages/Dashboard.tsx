@@ -14,13 +14,14 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useDashboardStore } from '@/stores/useDashboardStore'
 import { usePcpStore } from '@/stores/usePcpStore'
-import { useAppStore } from '@/stores/useAppStore'
-import { canCreatePcp, isPcpAdminScope } from '@/lib/roles'
+import { useEffectiveRoles } from '@/lib/useEffectiveRoles'
+import { canCreatePcp, canViewOrgFinancials, isPcpAdminScope } from '@/lib/roles'
 import { formatAed, formatCurrency, formatPercent } from '@/lib/utils'
 
 export function Dashboard() {
   const { metrics, loading, fetchMetrics } = useDashboardStore()
-  const { systemRole, pcpRole, businessUnit, currentUserId } = useAppStore()
+  const { systemRole, pcpRole, businessUnit, currentUserId } = useEffectiveRoles()
+  const showFinancials = canViewOrgFinancials(systemRole, pcpRole)
   const { requests, masters, loading: pcpLoading, fetchRequests, fetchMasters } = usePcpStore()
   const isHr = systemRole === 'HR'
   const showPcpData = systemRole === 'Admin' || isHr || (systemRole === 'Manager' && !!pcpRole)
@@ -63,29 +64,29 @@ export function Dashboard() {
   const { kpis } = metrics
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
+    <div className="space-y-4 animate-fade-in min-w-0 sm:space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div className="min-w-0">
+          <h1 className="text-xl font-bold tracking-tight sm:text-2xl">Dashboard</h1>
+          <p className="text-sm text-muted-foreground break-words">
             {isHr ? 'Workforce & personnel planning' : `Projects, workforce, budgets${isPcpAdmin ? ' · all business units' : pcpRole ? ` · ${businessUnit}` : ''}`}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={() => setExportOpen(true)}>
+          <Button variant="outline" size="sm" className="flex-1 sm:flex-none" onClick={() => setExportOpen(true)}>
             <Download className="h-4 w-4" /> Export
           </Button>
         {canCreatePcp(systemRole, pcpRole) && (
-          <Link to="/pcp/new">
-            <Button className="bg-primary hover:bg-primary/90">
+          <Link to="/pcp/new" className="flex-1 sm:flex-none">
+            <Button size="sm" className="w-full bg-primary hover:bg-primary/90 sm:w-auto">
               <FilePlus className="h-4 w-4" /> New PCP
             </Button>
           </Link>
         )}
         {isPcpAdmin && (
           <>
-            <Link to="/pcp/all"><Button variant="outline" size="sm"><FileText className="h-4 w-4" /> PCPs</Button></Link>
-            <Link to="/pcp/approval"><Button variant="outline" size="sm"><CheckSquare className="h-4 w-4" /> Approvals</Button></Link>
+            <Link to="/pcp/all" className="flex-1 sm:flex-none"><Button variant="outline" size="sm" className="w-full sm:w-auto"><FileText className="h-4 w-4" /> PCPs</Button></Link>
+            <Link to="/pcp/approval" className="flex-1 sm:flex-none"><Button variant="outline" size="sm" className="w-full sm:w-auto"><CheckSquare className="h-4 w-4" /> Approvals</Button></Link>
           </>
         )}
         </div>
@@ -101,7 +102,7 @@ export function Dashboard() {
         }}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
         {!isHr && (
           <KPICard
             title="Active Projects"
@@ -117,7 +118,7 @@ export function Dashboard() {
           icon={Users}
           subtitle={`${kpis.availableResources} available · ${kpis.allocatedResources} allocated`}
         />
-        {!isHr && (
+        {!isHr && showFinancials && (
           <>
             <KPICard
               title="Budget Utilization"
@@ -172,20 +173,20 @@ export function Dashboard() {
         )}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {!isHr && <DashboardCharts metrics={metrics} />}
+      <div className="grid min-w-0 grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2">
+        {!isHr && showFinancials && <DashboardCharts metrics={metrics} />}
 
         {showPcpData && !isPcpAdmin && !pcpLoading && (
-          <Card>
+          <Card className="min-w-0">
             <CardHeader><CardTitle>Recent PCP Requests</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               {requests.slice(0, 5).map((r) => (
-                <Link key={r.id} to={`/pcp/requests/${r.id}`} className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50">
-                  <div>
+                <Link key={r.id} to={`/pcp/requests/${r.id}`} className="flex flex-col gap-2 rounded-lg border p-3 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0">
                     <p className="font-medium text-accent">{r.pcpNo}</p>
-                    <p className="text-sm text-muted-foreground">{r.client} · {r.positionSummary || `${r.positions?.length} positions`}</p>
+                    <p className="text-sm text-muted-foreground break-words">{r.client} · {r.positionSummary || `${r.positions?.length} positions`}</p>
                   </div>
-                  <PcpStatusChip status={r.status} />
+                  <PcpStatusChip status={r.status} className="self-start sm:self-center" />
                 </Link>
               ))}
               {!requests.length && <p className="text-sm text-muted-foreground">No PCPs in your business unit yet.</p>}
@@ -194,7 +195,9 @@ export function Dashboard() {
         )}
 
         {showPcpData && isPcpAdmin && !pcpLoading && (
+          <div className="min-w-0 lg:col-span-2">
           <PcpAllBusPanel requests={requests} businessUnits={masters?.businessUnits} />
+          </div>
         )}
       </div>
     </div>
